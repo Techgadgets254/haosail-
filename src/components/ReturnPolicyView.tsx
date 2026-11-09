@@ -35,7 +35,7 @@ export default function ReturnPolicyView() {
     e.preventDefault();
     const orderRef = selectedOrderForReturn || "General Order / Item";
     const msg = `Hello Haosail Kenya Return Team, I would like to initiate a return under your 30-Day Return Policy:\n\nOrder Ref: ${orderRef}\nReason: ${returnReason}\nNotes: ${returnNotes || "N/A"}\n\nPlease guide me on courier dispatch / store drop-off at Waiyaki Way.`;
-    window.open(`https://wa.me/254792620789?text=${encodeURIComponent(msg)}`, "_blank");
+    window.open(`https://wa.me/254750707038?text=${encodeURIComponent(msg)}`, "_blank");
     setReturnSubmitted(true);
   };
 
@@ -104,7 +104,7 @@ export default function ReturnPolicyView() {
             </span>
             <span className="flex items-center gap-1.5 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200">
               <Phone className="w-3.5 h-3.5 text-emerald-400" />
-              +254 792 620 789
+              +254 750 707 038
             </span>
           </div>
         </div>
@@ -443,7 +443,7 @@ export default function ReturnPolicyView() {
 
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
               <p className="text-[11px] text-slate-500">
-                Need immediate help? Call support at <strong className="text-slate-900">+254 792 620 789</strong> or email <strong className="text-slate-900">sales@haosail.ke</strong>
+                Need immediate help? Call support at <strong className="text-slate-900">+254 750 707 038</strong> or email <strong className="text-slate-900">sales@haosail.ke</strong>
               </p>
               <button
                 type="submit"
@@ -472,13 +472,13 @@ export default function ReturnPolicyView() {
             <span>Email Support</span>
           </a>
           <a
-            href="https://wa.me/254792620789"
+            href="https://wa.me/254750707038"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-1.5 px-3 py-2 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-xl text-emerald-800 font-bold transition-colors"
           >
             <Phone className="w-3.5 h-3.5 text-emerald-600" />
-            <span>WhatsApp (+254 792 620 789)</span>
+            <span>WhatsApp (+254 750 707 038)</span>
           </a>
         </div>
       </div>

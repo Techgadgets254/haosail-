@@ -1513,7 +1513,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             orderId: docRef.id,
-            recipient: "0792620789",
+            recipient: "0750707038",
             customerName: details.customerName,
             customerPhone: details.customerPhone,
             totalAmount: orderData.totalAmount,

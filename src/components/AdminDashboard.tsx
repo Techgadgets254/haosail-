@@ -131,14 +131,17 @@ export default function AdminDashboard() {
   const handlePasscodeSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const clean = passcode.trim();
-    if (clean === "2026" || clean === "admin" || clean === "haosail2026") {
+    const customKey = localStorage.getItem("haosail_admin_secret_key");
+    const validKeys = [customKey, "2026", "haosail2026", "haosail#admin"].filter(Boolean);
+    
+    if (validKeys.includes(clean)) {
       setIsAuthenticated(true);
       setAuthError("");
       try {
         sessionStorage.setItem("haosail_admin_auth", "true");
       } catch (e) {}
     } else {
-      setAuthError("Invalid access key. Default passcode is 2026.");
+      setAuthError("Access denied. Please enter the authorized administrator key.");
     }
   };
 
@@ -394,7 +397,7 @@ export default function AdminDashboard() {
             <div>
               <div class="logo">HAOSAIL MACHINERY KENYA</div>
               <div style="font-size: 12px; color: #64748B; margin-top: 3px;">Executive Operations & Inventory Audit</div>
-              <div style="font-size: 11px; color: #64748B;">Nairobi Headquarters &bull; Tel: +254 741 814041</div>
+              <div style="font-size: 11px; color: #64748B;">Nairobi Headquarters &bull; Tel: +254 750 707038</div>
             </div>
             <div style="text-align: right;">
               <span class="badge">OFFICIAL AUDIT</span>
@@ -561,7 +564,7 @@ export default function AdminDashboard() {
                 type="password"
                 required
                 autoFocus
-                placeholder="Enter passcode (Default: 2026)"
+                placeholder="Enter administrator passcode"
                 value={passcode}
                 onChange={(e) => setPasscode(e.target.value)}
                 className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 focus:border-[#0055B8] dark:focus:border-blue-500 focus:ring-2 focus:ring-[#0055B8]/20 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-white font-mono tracking-widest focus:outline-none min-h-[46px]"
@@ -578,7 +581,7 @@ export default function AdminDashboard() {
           </form>
 
           <div className="pt-2 border-t border-slate-100 dark:border-slate-800 text-[11px] text-slate-400 dark:text-slate-500">
-            Handover passcode: <span className="font-mono font-bold text-slate-700 dark:text-slate-300">2026</span>
+            Confidential access &bull; Authorized personnel only
           </div>
         </div>
       </div>

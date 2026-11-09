@@ -235,7 +235,7 @@ export default function MachineryServiceSchedules({
       doc.setFont("Helvetica", "normal");
       doc.setFontSize(8.5);
       doc.text("Factory Recommended Preventive Maintenance Protocol & Engineering Log", 15, 23);
-      doc.text("Engineering Desk: +254 792 620 789 | Email: info@haosail.ke | Waiyaki Way, Nairobi", 15, 29);
+      doc.text("Engineering Desk: +254 750 707 038 | Email: info@haosail.ke | Waiyaki Way, Nairobi", 15, 29);
 
       // Equipment Specs Box
       doc.setFillColor(248, 250, 252);
@@ -349,13 +349,13 @@ export default function MachineryServiceSchedules({
             )}
 
             <a
-              href="https://wa.me/254792620789?text=Hello%20Haosail%20Engineering%20Desk%2C%20I%20would%20like%20to%20schedule%20a%20technician%20visit%20for%20machinery%20maintenance."
+              href="https://wa.me/254750707038?text=Hello%20Haosail%20Engineering%20Desk%2C%20I%20would%20like%20to%20schedule%20a%20technician%20visit%20for%20machinery%20maintenance."
               target="_blank"
               rel="noreferrer"
               className="bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs py-2 px-3.5 rounded-xl transition-all flex items-center gap-1.5 shadow-xs cursor-pointer"
             >
               <MessageSquare className="w-3.5 h-3.5" />
-              <span>Book Engineer (+254 792 620 789)</span>
+              <span>Book Engineer (+254 750 707 038)</span>
             </a>
           </div>
         </div>
@@ -506,7 +506,7 @@ export default function MachineryServiceSchedules({
                 </button>
 
                 <a
-                  href={`https://wa.me/254792620789?text=${encodeURIComponent(
+                  href={`https://wa.me/254750707038?text=${encodeURIComponent(
                     `Hello Haosail Kenya, I would like to book a certified technician to inspect my ${currentMachine.brand} ${currentMachine.name} (Order Ref: #${currentMachine.orderId.substring(0, 8)}).`
                   )}`}
                   target="_blank"
@@ -609,7 +609,7 @@ export default function MachineryServiceSchedules({
 
                       {/* WhatsApp Schedule Button */}
                       <a
-                        href={`https://wa.me/254792620789?text=${encodeURIComponent(
+                        href={`https://wa.me/254750707038?text=${encodeURIComponent(
                           `Hello Haosail Engineering, I would like to schedule the "${milestone.title}" for my ${currentMachine.brand} ${currentMachine.name} (Order #${currentMachine.orderId.substring(0, 8)}).`
                         )}`}
                         target="_blank"

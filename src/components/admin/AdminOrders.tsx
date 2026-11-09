@@ -145,7 +145,7 @@ export default function AdminOrders({
             <div>
               <div class="logo">HAOSAIL MACHINERY KENYA</div>
               <p style="color: #64748B; font-size: 12px; margin: 4px 0 0 0;">Official Commercial Proforma Invoice &bull; E-TIMS Tax Compliant</p>
-              <p style="color: #64748B; font-size: 11px; margin: 2px 0 0 0;">Waiyaki Way / Enterprise Road Showroom, Nairobi | Tel: +254 792 620 789</p>
+              <p style="color: #64748B; font-size: 11px; margin: 2px 0 0 0;">Waiyaki Way / Enterprise Road Showroom, Nairobi | Tel: +254 750 707 038</p>
             </div>
             <div class="badge">
               ${order.paymentStatus || "PENDING"}
@@ -224,7 +224,7 @@ export default function AdminOrders({
         })
       });
 
-      // 2. WhatsApp notification to 0792620789
+      // 2. WhatsApp notification to 0750707038
       await fetch("/api/whatsapp/notify", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

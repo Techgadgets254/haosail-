@@ -184,7 +184,7 @@ export default function LiveOrderTracker({
       doc.setFontSize(7.5);
       doc.text("INDUSTRIAL MACHINERY, HEAVY TOOLS & GARAGE EQUIPMENT", 15, 24);
       doc.text("Waiyaki Way, Westlands, Nairobi, Kenya", 15, 29);
-      doc.text("Sales & Dispatch: +254 792 620 789 | Email: info@haosail.ke", 15, 34);
+      doc.text("Sales & Dispatch: +254 750 707 038 | Email: info@haosail.ke", 15, 34);
 
       // 3. Tax Invoice Badge
       doc.setFillColor(255, 255, 255);
@@ -331,13 +331,13 @@ export default function LiveOrderTracker({
 
           <div className="flex items-center gap-2 shrink-0">
             <a
-              href="https://wa.me/254792620789?text=Hello%20Haosail%20Dispatch%2C%20following%20up%20on%20my%20delivery%20status."
+              href="https://wa.me/254750707038?text=Hello%20Haosail%20Dispatch%2C%20following%20up%20on%20my%20delivery%20status."
               target="_blank"
               rel="noreferrer"
               className="bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs py-2 px-3.5 rounded-xl transition-all flex items-center gap-1.5 shadow-xs cursor-pointer"
             >
               <MessageSquare className="w-3.5 h-3.5" />
-              <span>Dispatch Line (+254 792 620 789)</span>
+              <span>Dispatch Line (+254 750 707 038)</span>
             </a>
           </div>
         </div>
@@ -628,7 +628,7 @@ export default function LiveOrderTracker({
 
                 <div className="bg-slate-50 border border-slate-200 p-3 rounded-xl">
                   <span className="text-slate-500 text-[10px] font-mono uppercase block mb-0.5">Dispatch Driver Hotline</span>
-                  <span className="font-bold text-slate-900 block">+254 792 620 789</span>
+                  <span className="font-bold text-slate-900 block">+254 750 707 038</span>
                   <span className="text-[10px] text-emerald-600 font-bold block mt-0.5">Haosail Logistics Desk</span>
                 </div>
               </div>

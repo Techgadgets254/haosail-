@@ -332,7 +332,7 @@ ${itemsList}
 
 Please let me know the estimated delivery and commissioning schedule. Thank you!`;
 
-    const url = `https://wa.me/254792620789?text=${encodeURIComponent(msg)}`;
+    const url = `https://wa.me/254750707038?text=${encodeURIComponent(msg)}`;
     window.open(url, "_blank");
   };
 
@@ -387,7 +387,7 @@ Please let me know the estimated delivery and commissioning schedule. Thank you!
       doc.setFontSize(9);
       doc.setFont("Helvetica", "normal");
       doc.text("Official Tax Invoice & Equipment Proforma", 15, 21);
-      doc.text("Waiyaki Way, Nairobi • Tel: +254 792 620 789 • info@haosail.ke", 15, 26);
+      doc.text("Waiyaki Way, Nairobi • Tel: +254 750 707 038 • info@haosail.ke", 15, 26);
 
       // Order Reference Box
       doc.setFillColor(248, 250, 252);
@@ -527,12 +527,12 @@ Please let me know the estimated delivery and commissioning schedule. Thank you!
                 DIRECT SALES &amp; DISPATCH LINE
               </span>
               <a 
-                href="https://wa.me/254792620789" 
+                href="https://wa.me/254750707038" 
                 target="_blank" 
                 rel="noreferrer"
                 className="text-sm font-medium text-white hover:text-sky-200 transition-colors flex items-center gap-1"
               >
-                <span>+254 792 620 789</span>
+                <span>+254 750 707 038</span>
                 <ExternalLink className="w-3 h-3" />
               </a>
               <span className="text-[10px] text-blue-100/70 block">Waiyaki Way, Nairobi Distribution Hub</span>
@@ -937,7 +937,7 @@ Please let me know the estimated delivery and commissioning schedule. Thank you!
                         </div>
 
                         <a
-                          href={`https://wa.me/254792620789?text=${encodeURIComponent(
+                          href={`https://wa.me/254750707038?text=${encodeURIComponent(
                             `Hello Haosail Sales, following up on Bulk Quote REF: ${quote.id} for ${quote.customerName} (${quote.companyName || "Workshop"}).`
                           )}`}
                           target="_blank"

@@ -134,10 +134,10 @@ export default function SocialMediaHub() {
     const storeLink = selectedProduct ? `https://haosail.ke/product/${selectedProduct.id}` : "https://haosail.ke";
 
     const drafts = {
-      facebook: `Upgrade your workshop operations with the authentic ${pBrand} ${pName}.\n\n✓ Heavy-duty industrial design\n✓ 12-Month Official Warranty & parts support in Nairobi\n✓ Price: ${pPrice}\n\nCall / WhatsApp our sales desk at +254 741 814041 or view catalog: ${storeLink}\n\n#HaosailMachinery #WorkshopTools #NairobiGarage #MachineryKenya`,
+      facebook: `Upgrade your workshop operations with the authentic ${pBrand} ${pName}.\n\n✓ Heavy-duty industrial design\n✓ 12-Month Official Warranty & parts support in Nairobi\n✓ Price: ${pPrice}\n\nCall / WhatsApp our sales desk at +254 750 707038 or view catalog: ${storeLink}\n\n#HaosailMachinery #WorkshopTools #NairobiGarage #MachineryKenya`,
       twitter: `High-performance industrial equipment: ${pBrand} ${pName}. Priced at ${pPrice} with 1-Year Warranty & fast delivery in Kenya. Details: ${storeLink} #HaosailKenya #MachineryKenya`,
       instagram: `Heavy-duty industrial standard: ${pBrand} ${pName}.\n\nAvailable directly at our Nairobi Showroom. Nationwide delivery across Kenya.\nPrice: ${pPrice}\n\nLink in bio or visit ${storeLink}\n\n#Haosail #MachineryKenya #AutomotiveKenya #WorkshopTools #KenyaIndustry`,
-      whatsapp: `*${pBrand} - ${pName}*\nPrice: *${pPrice}*\nStatus: Genuine Import • 12-Month Official Warranty\n\nShowroom & Depot: Nairobi, Kenya\nOrder / Enquiries: +254 741 814041\nCatalog link: ${storeLink}`
+      whatsapp: `*${pBrand} - ${pName}*\nPrice: *${pPrice}*\nStatus: Genuine Import • 12-Month Official Warranty\n\nShowroom & Depot: Nairobi, Kenya\nOrder / Enquiries: +254 750 707038\nCatalog link: ${storeLink}`
     };
 
     setPlatformCopies(drafts);

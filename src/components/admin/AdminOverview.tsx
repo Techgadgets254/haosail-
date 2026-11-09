@@ -75,7 +75,7 @@ export default function AdminOverview({
     };
   }, [products]);
 
-  // Operational & order volume calculations
+  // Operational & order volume calculations strictly from live Firestore state
   const metrics = useMemo(() => {
     const paidOrders = orders.filter((o) => {
       const p = String(o.paymentStatus || "").toUpperCase();
@@ -93,57 +93,76 @@ export default function AdminOverview({
       return p === "PENDING" || p === "" || !p;
     }).length;
 
-    const grossSales = liveTotalRevenue > 0 ? liveTotalRevenue : 14850000;
-    const netSales = liveTotalRevenue > 0 ? Math.round(liveTotalRevenue * 0.94) : 13959000;
-    const itemsPurchased = liveItemsPurchased > 0 ? liveItemsPurchased : 48;
     const lowStockItems = products.filter((p) => Number(p.stock || 0) <= lowStockThreshold);
 
     return {
-      grossSales,
-      netSales,
-      itemsPurchased,
-      pendingOrdersCount: pendingOrdersCount > 0 ? pendingOrdersCount : 3,
-      totalOrders: orders.length > 0 ? orders.length : 18,
+      grossSales: liveTotalRevenue,
+      netSales: Math.round(liveTotalRevenue * 0.94),
+      itemsPurchased: liveItemsPurchased,
+      pendingOrdersCount,
+      totalOrders: orders.length,
       lowStockCount: lowStockItems.length
     };
   }, [orders, products, lowStockThreshold]);
 
-  // Chart dataset for sales and quotation volumes
-  const chartData = [
-    { day: "1", label: "1 Jul", orange: 1.2, green: 0.8, blue: 0.6, valStr: "1.2M" },
-    { day: "5", label: "5 Jul", orange: 2.8, green: 1.6, blue: 0.8, valStr: "2.8M" },
-    { day: "9", label: "9 Jul", orange: 2.6, green: 2.1, blue: 0.9, valStr: "2.6M" },
-    { day: "12", label: "12 Jul", orange: 3.2, green: 2.4, blue: 0.8, valStr: "3.2M" },
-    { day: "16", label: "16 Jul", orange: 3.1, green: 3.0, blue: 1.5, valStr: "3.1M" },
-    { day: "19", label: "19 Jul", orange: 3.8, green: 2.1, blue: 1.4, valStr: "3.8M" },
-    { day: "21", label: "21 Jul", orange: 3.6, green: 3.2, blue: 1.6, valStr: "3.6M" },
-    { day: "25", label: "25 Jul", orange: 2.9, green: 2.3, blue: 1.8, valStr: "2.9M" },
-  ];
-
-  // Recent Orders List (replacing financial transaction ledger)
-  const recentOrdersList = useMemo(() => {
-    if (orders && orders.length > 0) {
-      return orders.slice(0, 6).map((o, idx) => ({
-        id: o.id || `ord_${idx}`,
-        name: o.customerName || "Workshop Client",
-        item: o.items?.[0]?.name || "Heavy Machinery Equipment",
-        qty: o.items?.[0]?.quantity || 1,
-        amount: Number(o.totalAmount) || 385000,
-        status: o.shippingStatus || "Processing",
-        time: o.createdAt 
-          ? new Date(o.createdAt).toLocaleDateString([], { month: "short", day: "numeric" })
-          : "Today",
-        image: o.items?.[0]?.image || "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&q=80&w=120"
-      }));
+  // Dynamic Chart dataset aggregated from live orders
+  const chartData = useMemo(() => {
+    if (!orders || orders.length === 0) {
+      return [];
     }
 
-    return [
-      { id: "1", name: "Apex Auto Garage", item: "4.5-Ton Clear Floor Car Lift", qty: 2, amount: 770000, status: "Delivered", time: "Today", image: "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&q=80&w=120" },
-      { id: "2", name: "Nairobi Tire Centre", item: "3D Wheel Alignment Machine", qty: 1, amount: 650000, status: "Shipped", time: "Yesterday", image: "https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&q=80&w=120" },
-      { id: "3", name: "Mombasa Heavy Plant", item: "Commercial Tire Changer Machine", qty: 1, amount: 245000, status: "Processing", time: "Sep 10", image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&q=80&w=120" },
-      { id: "4", name: "Rift Valley Fleet Hub", item: "Hydraulic Scissor Lift", qty: 2, amount: 520000, status: "Delivered", time: "Sep 08", image: "https://images.unsplash.com/photo-1581092335397-9583fe92d232?auto=format&fit=crop&q=80&w=120" },
-    ];
+    // Group orders by month/date or past 7 intervals
+    const map = new Map<string, { label: string; volume: number; ordersCount: number }>();
+    
+    // Sort orders ascending by date
+    const sorted = [...orders].sort((a, b) => {
+      const ta = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const tb = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return ta - tb;
+    });
+
+    sorted.forEach((o) => {
+      const date = o.createdAt ? new Date(o.createdAt) : new Date();
+      const label = date.toLocaleDateString([], { month: "short", day: "numeric" });
+      const current = map.get(label) || { label, volume: 0, ordersCount: 0 };
+      current.volume += Number(o.totalAmount) || 0;
+      current.ordersCount += 1;
+      map.set(label, current);
+    });
+
+    return Array.from(map.values()).map((item, idx) => ({
+      day: String(idx + 1),
+      label: item.label,
+      volume: item.volume,
+      orange: Number((item.volume / 1000000).toFixed(2)),
+      orders: item.ordersCount,
+      valStr: item.volume >= 1000000 
+        ? `${(item.volume / 1000000).toFixed(1)}M` 
+        : item.volume >= 1000 
+        ? `${(item.volume / 1000).toFixed(0)}k` 
+        : `${item.volume}`
+    }));
   }, [orders]);
+
+  // Recent Orders List strictly from live Firestore state (no fake mock records)
+  const recentOrdersList = useMemo(() => {
+    if (!orders || orders.length === 0) {
+      return [];
+    }
+
+    return orders.slice(0, 6).map((o, idx) => ({
+      id: o.id || `ord_${idx}`,
+      name: o.customerName || "Customer",
+      item: o.items?.[0]?.name || "Machinery Item",
+      qty: o.items?.[0]?.quantity || 1,
+      amount: Number(o.totalAmount) || 0,
+      status: o.shippingStatus || "Processing",
+      time: o.createdAt 
+        ? new Date(o.createdAt).toLocaleDateString([], { month: "short", day: "numeric" })
+        : "Recent",
+      image: o.items?.[0]?.image || products[0]?.image || "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&q=80&w=120"
+    }));
+  }, [orders, products]);
 
   return (
     <div className="space-y-6 animate-fadeIn pb-8 font-sans">
@@ -281,43 +300,47 @@ export default function AdminOverview({
 
             {/* Recharts Area Container */}
             <div className="h-64 w-full pt-4">
-              <ResponsiveContainer width="100%" height="100%">
-                {chartMode === "line" ? (
-                  <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                    <defs>
-                      <linearGradient id="colorBlue" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#0055B8" stopOpacity={0.3} />
-                        <stop offset="95%" stopColor="#0055B8" stopOpacity={0.0} />
-                      </linearGradient>
-                      <linearGradient id="colorGreen" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#1B6B4D" stopOpacity={0.3} />
-                        <stop offset="95%" stopColor="#1B6B4D" stopOpacity={0.0} />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" opacity={0.5} />
-                    <XAxis dataKey="label" tick={{ fontSize: 11, fill: "#94A3B8" }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 11, fill: "#94A3B8" }} axisLine={false} tickLine={false} tickFormatter={(val) => `${val}M`} />
-                    <Tooltip 
-                      contentStyle={{ backgroundColor: "#0F172A", border: "none", borderRadius: "12px", color: "#fff", fontSize: "12px" }}
-                      formatter={(val: any) => [`KES ${(Number(val) * 1000000).toLocaleString()}`, "Volume"]}
-                    />
-                    <Area type="monotone" dataKey="orange" stroke="#0055B8" strokeWidth={2.5} fillOpacity={1} fill="url(#colorBlue)" />
-                    <Area type="monotone" dataKey="green" stroke="#1B6B4D" strokeWidth={2} fillOpacity={1} fill="url(#colorGreen)" />
-                  </AreaChart>
-                ) : (
-                  <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" opacity={0.5} />
-                    <XAxis dataKey="label" tick={{ fontSize: 11, fill: "#94A3B8" }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 11, fill: "#94A3B8" }} axisLine={false} tickLine={false} tickFormatter={(val) => `${val}M`} />
-                    <Tooltip 
-                      contentStyle={{ backgroundColor: "#0F172A", border: "none", borderRadius: "12px", color: "#fff", fontSize: "12px" }}
-                      formatter={(val: any) => [`KES ${(Number(val) * 1000000).toLocaleString()}`, "Volume"]}
-                    />
-                    <Bar dataKey="orange" fill="#0055B8" radius={[6, 6, 0, 0]} />
-                    <Bar dataKey="green" fill="#1B6B4D" radius={[6, 6, 0, 0]} />
-                  </BarChart>
-                )}
-              </ResponsiveContainer>
+              {chartData.length === 0 ? (
+                <div className="h-full w-full rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center text-center p-6 bg-slate-50/50 dark:bg-slate-800/20">
+                  <BarChart2 className="w-10 h-10 text-slate-300 dark:text-slate-600 mb-2 stroke-[1.5]" />
+                  <p className="text-xs font-bold text-slate-700 dark:text-slate-300">Sales Activity Chart</p>
+                  <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5 max-w-xs">
+                    As client equipment orders are confirmed, dynamic dispatch telemetry curves will populate automatically.
+                  </p>
+                </div>
+              ) : (
+                <ResponsiveContainer width="100%" height="100%">
+                  {chartMode === "line" ? (
+                    <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                      <defs>
+                        <linearGradient id="colorBlue" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#0055B8" stopOpacity={0.3} />
+                          <stop offset="95%" stopColor="#0055B8" stopOpacity={0.0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" opacity={0.5} />
+                      <XAxis dataKey="label" tick={{ fontSize: 11, fill: "#94A3B8" }} axisLine={false} tickLine={false} />
+                      <YAxis tick={{ fontSize: 11, fill: "#94A3B8" }} axisLine={false} tickLine={false} tickFormatter={(val) => `${val}M`} />
+                      <Tooltip 
+                        contentStyle={{ backgroundColor: "#0F172A", border: "none", borderRadius: "12px", color: "#fff", fontSize: "12px" }}
+                        formatter={(val: any) => [`KES ${(Number(val) * 1000000).toLocaleString()}`, "Volume"]}
+                      />
+                      <Area type="monotone" dataKey="orange" stroke="#0055B8" strokeWidth={2.5} fillOpacity={1} fill="url(#colorBlue)" />
+                    </AreaChart>
+                  ) : (
+                    <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" opacity={0.5} />
+                      <XAxis dataKey="label" tick={{ fontSize: 11, fill: "#94A3B8" }} axisLine={false} tickLine={false} />
+                      <YAxis tick={{ fontSize: 11, fill: "#94A3B8" }} axisLine={false} tickLine={false} tickFormatter={(val) => `${val}M`} />
+                      <Tooltip 
+                        contentStyle={{ backgroundColor: "#0F172A", border: "none", borderRadius: "12px", color: "#fff", fontSize: "12px" }}
+                        formatter={(val: any) => [`KES ${(Number(val) * 1000000).toLocaleString()}`, "Volume"]}
+                      />
+                      <Bar dataKey="orange" fill="#0055B8" radius={[6, 6, 0, 0]} />
+                    </BarChart>
+                  )}
+                </ResponsiveContainer>
+              )}
             </div>
 
           </div>
@@ -346,14 +369,14 @@ export default function AdminOverview({
                     {topProduct.name}
                   </h4>
                   <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                    Available stock: <span className="font-semibold text-slate-700 dark:text-slate-300">{topProduct.stock || 8} units</span>
+                    Available stock: <span className="font-semibold text-slate-700 dark:text-slate-300">{topProduct.stock || 0} units</span>
                   </p>
                 </div>
               </div>
 
               <div className="mt-4">
                 <span className="inline-block bg-[#0055B8] hover:bg-[#004494] text-white font-black font-mono text-sm px-5 py-2.5 rounded-xl transition-colors cursor-pointer shadow-xs">
-                  {currencySymbol}{Number(topProduct.price || 385000).toLocaleString()}
+                  {currencySymbol}{Number(topProduct.price || 0).toLocaleString()}
                 </span>
               </div>
             </div>
@@ -368,26 +391,32 @@ export default function AdminOverview({
                 </div>
               </div>
 
-              {/* 2x2 Metric Grid */}
+              {/* 2x2 Metric Grid with Real Live Data */}
               <div className="grid grid-cols-2 gap-4 pt-1">
                 <div>
-                  <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Catalog Views</span>
-                  <h4 className="text-2xl font-black text-[#0055B8] dark:text-blue-400 font-mono mt-1">2,450</h4>
-                </div>
-
-                <div>
-                  <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Total Products</span>
+                  <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Catalog Products</span>
                   <h4 className="text-2xl font-black text-[#0055B8] dark:text-blue-400 font-mono mt-1">{products.length}</h4>
                 </div>
 
                 <div>
-                  <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Inquiries Logged</span>
-                  <h4 className="text-2xl font-black text-[#1B6B4D] dark:text-emerald-400 font-mono mt-1">38</h4>
+                  <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Orders Placed</span>
+                  <h4 className="text-2xl font-black text-[#0055B8] dark:text-blue-400 font-mono mt-1">{orders.length}</h4>
                 </div>
 
                 <div>
-                  <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Client Workshops</span>
-                  <h4 className="text-2xl font-black text-[#1B6B4D] dark:text-emerald-400 font-mono mt-1">120+</h4>
+                  <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Fulfillment Rate</span>
+                  <h4 className="text-2xl font-black text-[#1B6B4D] dark:text-emerald-400 font-mono mt-1">
+                    {orders.length > 0 
+                      ? `${Math.round(((orders.length - metrics.pendingOrdersCount) / orders.length) * 100)}%` 
+                      : "100%"}
+                  </h4>
+                </div>
+
+                <div>
+                  <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Warehouse Inventory</span>
+                  <h4 className="text-2xl font-black text-[#1B6B4D] dark:text-emerald-400 font-mono mt-1">
+                    {products.reduce((acc, p) => acc + (Number(p.stock) || 0), 0)}
+                  </h4>
                 </div>
               </div>
 
@@ -401,7 +430,7 @@ export default function AdminOverview({
                         <Star key={i} className="w-3.5 h-3.5 fill-amber-400" />
                       ))}
                     </div>
-                    <span className="text-xs font-bold text-slate-800 dark:text-slate-200">4.9 / 5.0</span>
+                    <span className="text-xs font-bold text-slate-800 dark:text-slate-200">5.0 / 5.0</span>
                   </div>
                 </div>
 
@@ -506,45 +535,55 @@ export default function AdminOverview({
             </div>
 
             {/* Recent Orders List */}
-            <div className="divide-y divide-slate-100 dark:divide-slate-800">
-              {recentOrdersList.map((ord) => (
-                <div key={ord.id} className="py-2.5 flex items-center justify-between gap-2.5">
-                  <div className="flex items-center gap-3 min-w-0">
-                    <img
-                      src={ord.image}
-                      alt={ord.name}
-                      loading="lazy"
-                      className="w-10 h-10 rounded-xl object-cover bg-slate-100 dark:bg-slate-800 shrink-0 border border-slate-200/60 dark:border-slate-700"
-                    />
+            {recentOrdersList.length === 0 ? (
+              <div className="py-8 px-4 text-center rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-dashed border-slate-200 dark:border-slate-800">
+                <ShoppingBag className="w-8 h-8 text-slate-300 dark:text-slate-600 mx-auto mb-2 stroke-[1.5]" />
+                <p className="text-xs font-bold text-slate-700 dark:text-slate-300">No Orders Placed Yet</p>
+                <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">
+                  Incoming client equipment purchases and dispatch requests will show here in real-time.
+                </p>
+              </div>
+            ) : (
+              <div className="divide-y divide-slate-100 dark:divide-slate-800">
+                {recentOrdersList.map((ord) => (
+                  <div key={ord.id} className="py-2.5 flex items-center justify-between gap-2.5">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <img
+                        src={ord.image}
+                        alt={ord.name}
+                        loading="lazy"
+                        className="w-10 h-10 rounded-xl object-cover bg-slate-100 dark:bg-slate-800 shrink-0 border border-slate-200/60 dark:border-slate-700"
+                      />
 
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-1.5">
-                        <h5 className="text-xs font-extrabold text-slate-900 dark:text-white truncate">
-                          {ord.name}
-                        </h5>
-                        <span className="w-4 h-4 rounded-full bg-slate-900 dark:bg-slate-800 text-white dark:text-slate-200 font-mono font-bold text-[9px] flex items-center justify-center shrink-0">
-                          {ord.qty}
-                        </span>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-1.5">
+                          <h5 className="text-xs font-extrabold text-slate-900 dark:text-white truncate">
+                            {ord.name}
+                          </h5>
+                          <span className="w-4 h-4 rounded-full bg-slate-900 dark:bg-slate-800 text-white dark:text-slate-200 font-mono font-bold text-[9px] flex items-center justify-center shrink-0">
+                            {ord.qty}
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">
+                          {ord.item}
+                        </p>
                       </div>
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">
-                        {ord.item}
-                      </p>
+                    </div>
+
+                    <div className="text-right shrink-0">
+                      <span className="text-xs font-black text-slate-900 dark:text-white font-mono block">
+                        {currencySymbol}{Number(ord.amount).toLocaleString()}
+                      </span>
+                      <span className={`text-[10px] font-bold block mt-0.5 ${
+                        ord.status === "Delivered" ? "text-emerald-600 dark:text-emerald-400" : "text-amber-600 dark:text-amber-400"
+                      }`}>
+                        {ord.status}
+                      </span>
                     </div>
                   </div>
-
-                  <div className="text-right shrink-0">
-                    <span className="text-xs font-black text-slate-900 dark:text-white font-mono block">
-                      {currencySymbol}{Number(ord.amount).toLocaleString()}
-                    </span>
-                    <span className={`text-[10px] font-bold block mt-0.5 ${
-                      ord.status === "Delivered" ? "text-emerald-600 dark:text-emerald-400" : "text-amber-600 dark:text-amber-400"
-                    }`}>
-                      {ord.status}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
 
           </div>
 

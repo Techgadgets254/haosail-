@@ -267,28 +267,6 @@ function StoreLayout() {
     if (document.body) document.body.scrollTop = 0;
   }, [activeView, selectedProductId]);
 
-  React.useEffect(() => {
-    const handleContextMenu = (e: MouseEvent) => {
-      e.preventDefault();
-    };
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && (e.key === "c" || e.key === "u" || e.key === "s" || e.key === "x")) {
-        e.preventDefault();
-      }
-      if (e.key === "F12") {
-        e.preventDefault();
-      }
-    };
-
-    window.addEventListener("contextmenu", handleContextMenu);
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      window.removeEventListener("contextmenu", handleContextMenu);
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, []);
 
   const activeProduct = React.useMemo(() => {
     if (activeView === "product-details" && selectedProductId) {
@@ -303,7 +281,7 @@ function StoreLayout() {
   useUserActivityTracker(activeView, activeProduct || null, cartCount, false);
 
   const whatsappUrl = React.useMemo(() => {
-    const phone = "254792620789";
+    const phone = "254750707038";
     if (activeProduct) {
       const text = `Hello! I am interested in purchasing the ${activeProduct.name} (KES ${activeProduct.price.toLocaleString()}). Could you please share more details?`;
       return `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;

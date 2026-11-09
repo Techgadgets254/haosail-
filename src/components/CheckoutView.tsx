@@ -356,7 +356,7 @@ export default function CheckoutView() {
 
   // Generate pre-filled WhatsApp message URL
   const generateWhatsAppUrl = () => {
-    const adminWhatsApp = "254792620789";
+    const adminWhatsApp = "254750707038";
     const ref = createdOrderId ? `#${createdOrderId.slice(0, 8).toUpperCase()}` : "N/A";
     
     if (submittedType === "bulk") {
@@ -549,8 +549,8 @@ Please confirm order receipt and dispatch schedule. Thank you!`;
               <MessageSquare className="w-5 h-5 text-white" />
               <span>
                 {submittedType === "bulk"
-                  ? "Chat on WhatsApp with Sales Team (+254 792 620 789)"
-                  : "Message Sales Desk on WhatsApp (+254 792 620 789)"}
+                  ? "Chat on WhatsApp with Sales Team (+254 750 707 038)"
+                  : "Message Sales Desk on WhatsApp (+254 750 707 038)"}
               </span>
               <ExternalLink className="w-4 h-4 opacity-80" />
             </a>
@@ -1049,10 +1049,10 @@ Please confirm order receipt and dispatch schedule. Thank you!`;
                     Questions before ordering? Call our showroom directly:
                   </p>
                   <a
-                    href="tel:0792620789"
+                    href="tel:0750707038"
                     className="font-medium text-xs text-[#0055B8] hover:underline block mt-1"
                   >
-                    📞 +254 792 620 789 (Sales & Technical Desk)
+                    📞 +254 750 707 038 (Sales & Technical Desk)
                   </a>
                 </div>
               </div>
