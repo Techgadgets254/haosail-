@@ -42,6 +42,7 @@ interface AdminInventoryProps {
   onBulkDelete: (ids: string[]) => Promise<void>;
   onExportCSV: () => void;
   onImportCSV: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onDownloadTemplate?: () => void;
   lowStockThreshold: number;
 }
 
@@ -53,6 +54,7 @@ export default function AdminInventory({
   onBulkDelete,
   onExportCSV,
   onImportCSV,
+  onDownloadTemplate,
   lowStockThreshold,
 }: AdminInventoryProps) {
   // Filter & Search states
@@ -387,19 +389,31 @@ export default function AdminInventory({
             accept=".csv"
             className="hidden"
           />
+
+          {onDownloadTemplate && (
+            <button
+              onClick={onDownloadTemplate}
+              className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold px-3.5 sm:px-4 py-2.5 rounded-xl text-xs flex items-center gap-1.5 transition-all cursor-pointer min-h-[44px] shadow-2xs"
+              title="Download empty Excel CSV template with all admin fields"
+            >
+              <FileText className="w-3.5 h-3.5 text-[#0066CC] dark:text-blue-400" />
+              <span>Excel Template</span>
+            </button>
+          )}
+
           <button
             onClick={() => csvInputRef.current?.click()}
-            className="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold px-3.5 sm:px-4 py-2.5 rounded-xl text-xs flex items-center gap-1.5 transition-all cursor-pointer min-h-[44px]"
-            title="Import machinery CSV"
+            className="bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 text-emerald-800 dark:text-emerald-300 font-bold px-3.5 sm:px-4 py-2.5 rounded-xl text-xs flex items-center gap-1.5 transition-all cursor-pointer min-h-[44px]"
+            title="Upload CSV to add new or update existing products in bulk"
           >
-            <Upload className="w-3.5 h-3.5 text-slate-600 dark:text-slate-400" />
-            <span>Import CSV</span>
+            <Upload className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+            <span>Bulk Upload CSV</span>
           </button>
           
           <button
             onClick={onExportCSV}
             className="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold px-3.5 sm:px-4 py-2.5 rounded-xl text-xs flex items-center gap-1.5 transition-all cursor-pointer min-h-[44px]"
-            title="Export catalog CSV"
+            title="Export all current catalog products to CSV / Excel"
           >
             <Download className="w-3.5 h-3.5 text-slate-600 dark:text-slate-400" />
             <span>Export CSV</span>
@@ -413,6 +427,33 @@ export default function AdminInventory({
             <span>Add Machinery</span>
           </button>
         </div>
+      </div>
+
+      {/* Bulk Update Banner with Excel Instructions */}
+      <div className="bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900/50 rounded-2xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
+        <div className="flex items-start gap-3">
+          <div className="w-8 h-8 rounded-xl bg-[#0066CC] text-white flex items-center justify-center shrink-0 mt-0.5">
+            <FileText className="w-4 h-4" />
+          </div>
+          <div>
+            <h4 className="font-extrabold text-blue-950 dark:text-blue-200">
+              Bulk Machinery Update via Excel / CSV
+            </h4>
+            <p className="text-blue-800 dark:text-blue-300/80 mt-0.5 leading-relaxed">
+              Export existing products, edit prices, stock, titles, specifications, or cover images directly in Excel, then click <strong className="font-bold text-[#0066CC] dark:text-blue-300">Bulk Upload CSV</strong>. Existing IDs/SKUs are updated automatically and new rows are inserted instantly.
+            </p>
+          </div>
+        </div>
+
+        {onDownloadTemplate && (
+          <button
+            onClick={onDownloadTemplate}
+            className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 border border-blue-200 dark:border-blue-800 hover:bg-blue-50 text-[#0066CC] dark:text-blue-300 font-bold text-xs shrink-0 cursor-pointer shadow-2xs self-start md:self-auto"
+          >
+            <Download className="w-3.5 h-3.5" />
+            <span>Download Template (.csv)</span>
+          </button>
+        )}
       </div>
 
       {/* Filter & Search Bar */}

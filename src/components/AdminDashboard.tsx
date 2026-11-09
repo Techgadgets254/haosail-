@@ -260,32 +260,236 @@ export default function AdminDashboard() {
     }
   };
 
-  // Export Catalog CSV
+  // Robust CSV parser supporting quotes, commas, and newlines
+  const parseCSVText = (text: string): string[][] => {
+    const result: string[][] = [];
+    let row: string[] = [];
+    let field = "";
+    let inQuotes = false;
+    let i = 0;
+
+    while (i < text.length) {
+      const c = text[i];
+      const next = text[i + 1];
+
+      if (inQuotes) {
+        if (c === '"') {
+          if (next === '"') {
+            field += '"';
+            i += 2;
+            continue;
+          } else {
+            inQuotes = false;
+            i++;
+            continue;
+          }
+        } else {
+          field += c;
+          i++;
+          continue;
+        }
+      } else {
+        if (c === '"') {
+          inQuotes = true;
+          i++;
+          continue;
+        } else if (c === ',') {
+          row.push(field.trim());
+          field = "";
+          i++;
+          continue;
+        } else if (c === '\r') {
+          if (next === '\n') {
+            i++;
+          }
+          row.push(field.trim());
+          result.push(row);
+          row = [];
+          field = "";
+          i++;
+          continue;
+        } else if (c === '\n') {
+          row.push(field.trim());
+          result.push(row);
+          row = [];
+          field = "";
+          i++;
+          continue;
+        } else {
+          field += c;
+          i++;
+          continue;
+        }
+      }
+    }
+
+    if (field.length > 0 || row.length > 0) {
+      row.push(field.trim());
+      result.push(row);
+    }
+
+    return result.filter((r) => r.some((val) => val.length > 0));
+  };
+
+  // Helper to escape values for CSV / Excel
+  const escapeCSV = (val: any) => {
+    if (val === null || val === undefined) return '""';
+    const str = String(val);
+    return `"${str.replace(/"/g, '""')}"`;
+  };
+
+  // Helper to serialize specifications to Excel / CSV friendly format
+  const serializeSpecs = (specs: Record<string, string> | undefined): string => {
+    if (!specs || typeof specs !== "object") return "";
+    return Object.entries(specs)
+      .map(([k, v]) => `${k}: ${v}`)
+      .join(" | ");
+  };
+
+  // Helper to parse specifications from string (supports " | " or newlines)
+  const parseSpecs = (specStr: string): Record<string, string> => {
+    const result: Record<string, string> = {};
+    if (!specStr) return result;
+    const lines = specStr.includes("|") ? specStr.split("|") : specStr.split("\n");
+    lines.forEach((line) => {
+      const trimmed = line.trim();
+      const idx = trimmed.indexOf(":");
+      if (idx > 0) {
+        const k = trimmed.slice(0, idx).trim();
+        const v = trimmed.slice(idx + 1).trim();
+        if (k && v) result[k] = v;
+      }
+    });
+    return result;
+  };
+
+  // Export Catalog CSV with ALL Admin Fields for Excel editing
   const handleExportProductsCSV = () => {
     if (products.length === 0) {
       alert("No machinery records available to export.");
       return;
     }
 
-    const headers = ["ID", "Name", "Brand", "Category", "Price", "Stock", "SKU"];
+    const headers = [
+      "ID",
+      "Machine Title",
+      "Brand",
+      "SKU",
+      "Category",
+      "Selling Price (KES)",
+      "Original Price (KES)",
+      "Stock Quantity",
+      "Warranty",
+      "Description",
+      "Technical Specifications",
+      "Cover Image URL",
+      "Gallery Image 2",
+      "Gallery Image 3",
+      "Gallery Image 4",
+      "Gallery Image 5"
+    ];
+
     const rows = products.map((p) => [
-      `"${p.id || ""}"`,
-      `"${(p.name || "").replace(/"/g, '""')}"`,
-      `"${(p.brand || "").replace(/"/g, '""')}"`,
-      `"${(p.category || "").replace(/"/g, '""')}"`,
+      escapeCSV(p.id || ""),
+      escapeCSV(p.name || ""),
+      escapeCSV(p.brand || "Haosail"),
+      escapeCSV(p.sku || ""),
+      escapeCSV(p.category || "Auto Maintenance"),
       p.price || 0,
+      p.originalPrice || p.price || 0,
       p.stock || 0,
-      `"${p.sku || ""}"`
+      escapeCSV(p.warranty || "1 Year Official Haosail Warranty"),
+      escapeCSV(p.description || ""),
+      escapeCSV(serializeSpecs(p.specifications)),
+      escapeCSV(p.image || ""),
+      escapeCSV(p.gallery?.[0] || ""),
+      escapeCSV(p.gallery?.[1] || ""),
+      escapeCSV(p.gallery?.[2] || ""),
+      escapeCSV(p.gallery?.[3] || "")
     ]);
 
-    const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
-    const encodedUri = encodeURI(csvContent);
+    const csvContent = "\uFEFF" + [headers.join(","), ...rows.map((r) => r.join(","))].join("\r\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
+    link.setAttribute("href", url);
     link.setAttribute("download", `HaoSail_Machinery_Inventory_${new Date().toISOString().split("T")[0]}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  // Download Sample Excel Template for adding or updating products
+  const handleDownloadCSVTemplate = () => {
+    const headers = [
+      "ID",
+      "Machine Title",
+      "Brand",
+      "SKU",
+      "Category",
+      "Selling Price (KES)",
+      "Original Price (KES)",
+      "Stock Quantity",
+      "Warranty",
+      "Description",
+      "Technical Specifications",
+      "Cover Image URL",
+      "Gallery Image 2",
+      "Gallery Image 3",
+      "Gallery Image 4",
+      "Gallery Image 5"
+    ];
+
+    const sampleRows = [
+      [
+        escapeCSV(""), // Leave ID blank to create new, or put existing product ID to update
+        escapeCSV("HaoSail 4.5-Ton Clear Floor Two-Post Car Lift"),
+        escapeCSV("Haosail"),
+        escapeCSV("HS-4500LIFT"),
+        escapeCSV("Automotive Lifting"),
+        385000,
+        420000,
+        8,
+        escapeCSV("1 Year Official Haosail Warranty"),
+        escapeCSV("Heavy duty clear floor hydraulic automotive lift with symmetric arms and dual cylinder drive."),
+        escapeCSV("Lifting Capacity: 4500kg | Lifting Height: 1900mm | Motor: 2.2kW 380V | Post Height: 3750mm"),
+        escapeCSV("https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&q=80&w=800"),
+        escapeCSV(""),
+        escapeCSV(""),
+        escapeCSV(""),
+        escapeCSV("")
+      ],
+      [
+        escapeCSV(""),
+        escapeCSV("HaoSail 3D Camera Wheel Alignment System"),
+        escapeCSV("Haosail"),
+        escapeCSV("HS-3DALIGN"),
+        escapeCSV("Tyre & Wheel Service"),
+        650000,
+        720000,
+        4,
+        escapeCSV("1 Year Official Haosail Warranty & Free Setup"),
+        escapeCSV("High-definition dual camera 3D wheel aligner with motorized beam and 50,000+ vehicle database."),
+        escapeCSV("Camera Resolution: 5.0MP HD | Target: Passive Target Plates | Operating Power: 220V 50Hz"),
+        escapeCSV("https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&q=80&w=800"),
+        escapeCSV(""),
+        escapeCSV(""),
+        escapeCSV(""),
+        escapeCSV("")
+      ]
+    ];
+
+    const csvContent = "\uFEFF" + [headers.join(","), ...sampleRows.map((r) => r.join(","))].join("\r\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `HaoSail_Products_Import_Template.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   // Export Orders CSV
@@ -316,7 +520,7 @@ export default function AdminDashboard() {
     document.body.removeChild(link);
   };
 
-  // Import Products CSV
+  // Import Products CSV (Supports creating new and updating existing in bulk)
   const handleImportProductsCSV = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -325,37 +529,144 @@ export default function AdminDashboard() {
     reader.onload = async () => {
       try {
         const csvText = reader.result as string;
-        const lines = csvText.split("\n").filter((l) => l.trim().length > 0);
-        if (lines.length < 2) return;
+        const matrix = parseCSVText(csvText);
+        if (matrix.length < 2) {
+          alert("The uploaded CSV file is empty or missing headers.");
+          return;
+        }
 
-        let importedCount = 0;
-        for (let i = 1; i < lines.length; i++) {
-          const parts = lines[i].split(",").map((s) => s.replace(/^"|"$/g, "").trim());
-          if (parts.length >= 4) {
-            const name = parts[1] || parts[0];
-            const brand = parts[2] || "HaoSail";
-            const category = parts[3] || "Auto Maintenance";
-            const price = Number(parts[4]) || 100000;
-            const stock = Number(parts[5]) || 5;
+        const headerRow = matrix[0].map((h) => h.toLowerCase().trim().replace(/[^a-z0-9]/g, ""));
+        
+        // Dynamic column index locator
+        const findCol = (...aliases: string[]) => {
+          for (const alias of aliases) {
+            const clean = alias.toLowerCase().replace(/[^a-z0-9]/g, "");
+            const idx = headerRow.findIndex((h) => h.includes(clean));
+            if (idx !== -1) return idx;
+          }
+          return -1;
+        };
 
-            const newId = `imported_${Date.now()}_${i}`;
-            await setDoc(doc(db, "products", newId), {
-              id: newId,
-              name,
-              brand,
-              category,
-              price,
-              stock,
-              description: "Imported industrial equipment",
-              image: "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&q=80&w=800",
-              createdAt: new Date().toISOString()
-            });
-            importedCount++;
+        const idIdx = findCol("id", "productid");
+        const nameIdx = findCol("machinetitle", "title", "name", "productname");
+        const brandIdx = findCol("brand", "manufacturer");
+        const skuIdx = findCol("sku", "modelnumber", "model");
+        const catIdx = findCol("category");
+        const priceIdx = findCol("sellingprice", "price");
+        const origPriceIdx = findCol("originalprice", "msrp", "wasprice");
+        const stockIdx = findCol("stockquantity", "stock", "quantity", "qty");
+        const warrantyIdx = findCol("warranty");
+        const descIdx = findCol("description", "desc");
+        const specIdx = findCol("technicalspecifications", "specifications", "specs");
+        const imageIdx = findCol("coverimage", "image", "photourl");
+        const g1Idx = findCol("galleryimage2", "gallery1", "image2");
+        const g2Idx = findCol("galleryimage3", "gallery2", "image3");
+        const g3Idx = findCol("galleryimage4", "gallery3", "image4");
+        const g4Idx = findCol("galleryimage5", "gallery4", "image5");
+
+        if (nameIdx === -1 && priceIdx === -1) {
+          alert("Could not detect product name or price columns in this CSV file. Please use the HaoSail Template.");
+          return;
+        }
+
+        let createdCount = 0;
+        let updatedCount = 0;
+        let batch = writeBatch(db);
+        let batchOps = 0;
+
+        for (let i = 1; i < matrix.length; i++) {
+          const row = matrix[i];
+          if (!row || row.length === 0) continue;
+
+          const rawId = idIdx !== -1 ? row[idIdx]?.trim() : "";
+          const name = (nameIdx !== -1 ? row[nameIdx]?.trim() : "") || "Machinery Item";
+          if (!name) continue;
+
+          // Check if product already exists by ID, SKU, or Exact Name
+          const existing = products.find((p) => {
+            if (rawId && p.id === rawId) return true;
+            const rowSku = skuIdx !== -1 ? row[skuIdx]?.trim() : "";
+            if (rowSku && p.sku && p.sku.toLowerCase() === rowSku.toLowerCase()) return true;
+            if (p.name.toLowerCase() === name.toLowerCase()) return true;
+            return false;
+          });
+
+          const brand = (brandIdx !== -1 && row[brandIdx]?.trim()) || existing?.brand || "Haosail";
+          const sku = (skuIdx !== -1 && row[skuIdx]?.trim()) || existing?.sku || `HS-${Math.floor(1000 + Math.random() * 9000)}`;
+          const category = (catIdx !== -1 && row[catIdx]?.trim()) || existing?.category || "Automotive Lifting";
+          
+          const rawPrice = priceIdx !== -1 ? Number(row[priceIdx]?.replace(/[^0-9.]/g, "")) : NaN;
+          const price = !isNaN(rawPrice) && rawPrice > 0 ? rawPrice : existing?.price || 100000;
+          
+          const rawOrig = origPriceIdx !== -1 ? Number(row[origPriceIdx]?.replace(/[^0-9.]/g, "")) : NaN;
+          const originalPrice = !isNaN(rawOrig) && rawOrig > 0 ? rawOrig : existing?.originalPrice || price;
+
+          const rawStock = stockIdx !== -1 ? Number(row[stockIdx]?.replace(/[^0-9]/g, "")) : NaN;
+          const stock = !isNaN(rawStock) ? Math.max(0, Math.floor(rawStock)) : existing?.stock ?? 5;
+
+          const warranty = (warrantyIdx !== -1 && row[warrantyIdx]?.trim()) || existing?.warranty || "1 Year Official Haosail Warranty";
+          const description = (descIdx !== -1 && row[descIdx]?.trim()) || existing?.description || `High efficiency commercial ${name} by ${brand}. Engineered for heavy-duty workshop operations across Kenya.`;
+
+          const rawSpecs = specIdx !== -1 ? row[specIdx]?.trim() : "";
+          const parsedSpecs = rawSpecs ? parseSpecs(rawSpecs) : existing?.specifications || { Category: category, Warranty: warranty };
+
+          const image = (imageIdx !== -1 && row[imageIdx]?.trim()) || existing?.image || "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&q=80&w=800";
+
+          const galleryList: string[] = [];
+          const g1 = (g1Idx !== -1 && row[g1Idx]?.trim()) || existing?.gallery?.[0] || "";
+          const g2 = (g2Idx !== -1 && row[g2Idx]?.trim()) || existing?.gallery?.[1] || "";
+          const g3 = (g3Idx !== -1 && row[g3Idx]?.trim()) || existing?.gallery?.[2] || "";
+          const g4 = (g4Idx !== -1 && row[g4Idx]?.trim()) || existing?.gallery?.[3] || "";
+          if (g1) galleryList.push(g1);
+          if (g2) galleryList.push(g2);
+          if (g3) galleryList.push(g3);
+          if (g4) galleryList.push(g4);
+
+          const targetId = existing ? existing.id : (rawId || `prod_${Date.now()}_${i}`);
+          const prodDocRef = doc(db, "products", targetId);
+
+          const payload: any = {
+            id: targetId,
+            name,
+            brand,
+            sku,
+            category,
+            price,
+            originalPrice,
+            stock,
+            warranty,
+            description,
+            specifications: parsedSpecs,
+            image,
+            gallery: galleryList,
+            updatedAt: new Date().toISOString()
+          };
+
+          if (existing) {
+            batch.set(prodDocRef, payload, { merge: true });
+            updatedCount++;
+          } else {
+            payload.createdAt = new Date().toISOString();
+            batch.set(prodDocRef, payload);
+            createdCount++;
+          }
+
+          batchOps++;
+          if (batchOps >= 450) {
+            await batch.commit();
+            batch = writeBatch(db);
+            batchOps = 0;
           }
         }
-        alert(`Successfully imported ${importedCount} machinery items.`);
-      } catch (err) {
-        console.warn("Import error:", err);
+
+        if (batchOps > 0) {
+          await batch.commit();
+        }
+
+        alert(`Bulk update complete!\n• ${updatedCount} existing products updated\n• ${createdCount} new products added`);
+      } catch (err: any) {
+        console.error("CSV import error:", err);
+        alert(`Failed to import CSV: ${err.message || "Invalid file structure"}`);
       }
     };
     reader.readAsText(file);
@@ -862,6 +1173,7 @@ export default function AdminDashboard() {
               onBulkDelete={handleBulkDelete}
               onExportCSV={handleExportProductsCSV}
               onImportCSV={handleImportProductsCSV}
+              onDownloadTemplate={handleDownloadCSVTemplate}
               lowStockThreshold={lowStockThreshold}
             />
           )}
