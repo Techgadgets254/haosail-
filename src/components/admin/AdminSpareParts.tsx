@@ -200,7 +200,7 @@ export default function AdminSpareParts() {
     switch (urgency) {
       case "machine_down":
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800 animate-pulse">
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800">
             <ShieldAlert className="w-3 h-3 text-red-600 dark:text-red-400" />
             Machine Down
           </span>
@@ -279,7 +279,6 @@ export default function AdminSpareParts() {
             <span className="text-[10px] font-bold text-[#0066CC] dark:text-[#3399FF] uppercase tracking-wider">AFTER-SALES & FIELD SERVICES</span>
             {machineDownCount > 0 && (
               <span className="bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 text-[10px] font-extrabold px-2 py-0.5 rounded-full border border-red-200 dark:border-red-800 flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-red-600 animate-ping" />
                 {machineDownCount} Machine Down Alert{machineDownCount > 1 ? "s" : ""}
               </span>
             )}

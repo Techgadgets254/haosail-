@@ -293,7 +293,7 @@ export default function ClientSparePartsForm({
     switch (urg) {
       case "machine_down":
         return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-red-50 text-red-700 border border-red-200 animate-pulse">
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-red-50 text-red-700 border border-red-200">
             <ShieldAlert className="w-3 h-3 text-red-600" />
             Machine Down (Emergency)
           </span>

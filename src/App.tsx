@@ -621,9 +621,8 @@ function StoreLayout() {
             initial={{ opacity: 0, y: 50, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.9 }}
-            className="fixed bottom-24 sm:bottom-10 left-1/2 -translate-x-1/2 z-[100] bg-[#0F0F0F] text-white px-5 py-3 rounded-2xl border border-[#0066CC]/40 shadow-2xl flex items-center gap-3 backdrop-blur-md"
+            className="fixed bottom-24 sm:bottom-10 left-1/2 -translate-x-1/2 z-[100] bg-[#0F0F0F] text-white px-5 py-3 rounded-2xl border border-slate-700 shadow-2xl flex items-center gap-3 backdrop-blur-md"
           >
-            <div className="w-2.5 h-2.5 rounded-full bg-[#0066CC] animate-pulse" />
             <span className="text-xs font-semibold text-white tracking-wide">{toastMessage}</span>
           </motion.div>
         )}

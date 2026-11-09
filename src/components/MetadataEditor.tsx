@@ -1737,12 +1737,10 @@ export default function MetadataEditor() {
               <div className="flex items-center gap-2">
                 {isSyncEnabled ? (
                   <span className="flex items-center gap-1.5 px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-bold uppercase rounded-full">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                     Live Sync Active
                   </span>
                 ) : (
                   <span className="flex items-center gap-1.5 px-3 py-1 bg-slate-100 border border-slate-200 text-slate-500 text-[10px] font-bold uppercase rounded-full">
-                    <span className="w-1.5 h-1.5 rounded-full bg-white/20" />
                     Sync Suspended
                   </span>
                 )}
@@ -2201,12 +2199,10 @@ export default function MetadataEditor() {
               <div className="flex items-center gap-2">
                 {smtpStatus?.configured ? (
                   <span className="flex items-center gap-1.5 px-3 py-1 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-bold uppercase rounded-full">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                     SMTP Configuration Loaded
                   </span>
                 ) : (
                   <span className="flex items-center gap-1.5 px-3 py-1 bg-rose-500/10 border border-rose-500/20 text-rose-400 text-[10px] font-bold uppercase rounded-full">
-                    <span className="w-1.5 h-1.5 rounded-full bg-rose-400 animate-ping" />
                     SMTP Simulation Mode
                   </span>
                 )}

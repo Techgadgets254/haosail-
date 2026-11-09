@@ -90,8 +90,7 @@ const FlashCountdown: React.FC<FlashCountdownProps> = ({ expiry }) => {
   }, [expiry]);
 
   return (
-    <span className="text-[10px] text-red-500 font-mono font-bold bg-red-50 px-2 py-0.5 rounded-md flex items-center gap-1 border border-red-200">
-      <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping shrink-0" />
+    <span className="text-[10px] text-red-600 font-mono font-bold bg-red-50 px-2 py-0.5 rounded-md flex items-center gap-1 border border-red-200">
       {timeLeft}
     </span>
   );
@@ -663,7 +662,6 @@ export default function ShopView() {
             </button>
 
             <div className="hidden sm:flex items-center gap-2 text-xs font-mono text-emerald-800 bg-emerald-50/80 border border-emerald-200/80 px-3.5 py-2 rounded-full font-medium shadow-2xs">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
               <span>Nairobi Showroom Live Stock</span>
             </div>
           </div>
@@ -800,7 +798,6 @@ export default function ShopView() {
                 : "bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200/80 dark:border-slate-700 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 hover:text-emerald-700 dark:hover:text-emerald-400"
             }`}
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
             <span>In Stock Nairobi</span>
           </button>
 

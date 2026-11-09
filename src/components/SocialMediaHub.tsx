@@ -238,8 +238,8 @@ export default function SocialMediaHub() {
       <div className="bg-gradient-to-r from-[#121212] via-[#1A1A1A] to-[#121212] p-6 rounded-2xl border border-slate-200 shadow-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 text-[#0066CC] font-semibold text-xs tracking-wider uppercase mb-1">
-            <Radio className="w-4 h-4 text-[#0066CC] animate-pulse" />
-            <span>Official Social Broadcaster Engine</span>
+            <Radio className="w-4 h-4 text-[#0066CC]" />
+            <span>Social Broadcaster Engine</span>
           </div>
           <h2 className="text-2xl font-bold text-white tracking-tight">Social Media Multi-Channel Hub</h2>
           <p className="text-xs text-slate-600 mt-1 max-w-2xl">

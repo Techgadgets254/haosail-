@@ -244,7 +244,6 @@ export default function AdminFlashOffers({ products }: AdminFlashOffersProps) {
                     <span>Ends: {offer.expiresAt || "Ongoing"}</span>
                   </span>
                   <span className="text-emerald-700 dark:text-emerald-400 font-bold flex items-center gap-1">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                     <span>Active on Web</span>
                   </span>
                 </div>

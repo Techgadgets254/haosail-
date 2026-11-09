@@ -25,8 +25,7 @@ export default function NotificationCenter() {
         <div className="pointer-events-auto bg-white/95 backdrop-blur-md border border-[#0066CC]/30 rounded-2xl p-4 shadow-2xl space-y-3.5 animate-fadeIn relative">
           <div className="flex items-center justify-between">
             <span className="font-sans font-black text-[10px] tracking-wider text-[#0066CC] uppercase flex items-center gap-1.5">
-              <span className="inline-block w-1.5 h-1.5 bg-[#0066CC] rounded-full animate-ping" />
-              <span>Broadcast Overlays ({notifications.length})</span>
+              <span>Notifications ({notifications.length})</span>
             </span>
             <button
               onClick={dismissAllNotifications}

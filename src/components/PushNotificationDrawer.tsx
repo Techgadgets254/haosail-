@@ -249,7 +249,7 @@ export default function PushNotificationDrawer({ isOpen, onClose }: PushNotifica
                       }`}
                     >
                       {!item.read && (
-                        <span className="absolute top-3 right-3 w-2 h-2 rounded-full bg-[#0066CC] animate-ping" />
+                        <span className="absolute top-3 right-3 w-2 h-2 rounded-full bg-[#0066CC]" />
                       )}
 
                       <div className="flex items-start gap-3">

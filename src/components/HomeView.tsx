@@ -214,7 +214,6 @@ export default function HomeView() {
           {/* Left Column: Heading, Subtext, and Rounded Pill CTA */}
           <div className="lg:col-span-6 space-y-5 text-left">
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/15 backdrop-blur-md border border-white/20 text-white text-xs font-mono font-medium">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
               <span>OFFICIAL KENYA MACHINERY SHOWROOM</span>
             </div>
 
@@ -336,7 +335,6 @@ export default function HomeView() {
         {/* Bottom Selector Strip: One-by-One Machine Carousel (matching user request: "on the select machnine make it one buy one like carrusel moving one by one") */}
         <div className="relative z-10 pt-5 sm:pt-6 border-t border-white/15 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3 text-white/90 text-xs font-mono">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             <span className="tracking-wide uppercase font-semibold">SELECT MACHINE</span>
             <span className="px-2 py-0.5 rounded-full bg-white/15 text-white text-[10px]">
               {selectedHeroIndex + 1} / {heroSelectorProducts.length}
@@ -432,7 +430,6 @@ export default function HomeView() {
         <section className="relative overflow-hidden" id="motion-promotions-section">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
             <div className="flex items-center gap-2.5">
-              <span className="w-2 h-2 rounded-full bg-[#0055B8] animate-pulse" />
               <h2 className="font-sans font-bold text-xl sm:text-2xl tracking-tight text-slate-900">
                 Special Warehouse Campaigns
               </h2>
@@ -515,7 +512,7 @@ export default function HomeView() {
                         </div>
 
                         <div className="flex items-center gap-1.5 text-xs text-emerald-800 bg-emerald-50/80 border border-emerald-200/80 px-3 py-1.5 rounded-full font-mono font-medium">
-                          <Clock className="w-3.5 h-3.5 text-emerald-600 animate-pulse" />
+                          <Clock className="w-3.5 h-3.5 text-emerald-600" />
                           <span>{product.stock} units ready in Nairobi</span>
                         </div>
                       </div>

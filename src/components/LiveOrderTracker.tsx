@@ -317,9 +317,8 @@ export default function LiveOrderTracker({
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
           <div>
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
               <span className="text-[11px] font-mono font-bold text-[#0066CC] uppercase tracking-wider">
-                Real-Time Firestore Logistics Stream
+                Order Delivery &amp; Freight Status
               </span>
             </div>
             <h2 className="text-xl sm:text-2xl font-bold text-slate-900 mt-1">

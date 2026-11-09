@@ -1150,7 +1150,6 @@ export default function ProductDetailsView() {
             {selectedRatingFilter !== null && (
               <div className="flex items-center justify-between bg-blue-50 border border-blue-200 rounded-xl p-3 text-xs animate-fadeIn">
                 <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-[#0066CC] animate-ping" />
                   <span className="text-slate-700">
                     Showing <strong className="text-slate-900">{selectedRatingFilter} Star</strong> feedback only
                   </span>

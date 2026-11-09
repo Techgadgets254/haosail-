@@ -4,7 +4,7 @@ import { db } from "../firebase";
 import { Product } from "../types";
 
 export interface UserActivityEvent {
-  eventType: "view_product_details" | "add_to_cart" | "open_ai_chat" | "search_query" | "page_view";
+  eventType: "view_product_details" | "add_to_cart" | "open_ai_chat" | "open_enquiry_chat" | "search_query" | "page_view";
   activeView?: string;
   productId?: string;
   productName?: string;
