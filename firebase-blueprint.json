@@ -1,0 +1,455 @@
+{
+  "entities": {
+    "product": {
+      "title": "Product",
+      "description": "Industrial machinery, workshop equipment, and construction tools offered on the HaoSail Kenya storefront",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Name of the machinery product" },
+        "brand": { "type": "string", "description": "Brand of the machine (HaoSail, etc.)" },
+        "category": { "type": "string", "description": "Category: Auto Maintenance, Construction Machinery, Woodworking, Air Compressors & Pumps, Generators & Welders, Metal Working" },
+        "price": { "type": "number", "description": "Price of item in KES" },
+        "stock": { "type": "integer", "description": "Inventory stock level" },
+        "description": { "type": "string", "description": "Detailed description of the specifications and selling points" },
+        "image": { "type": "string", "description": "Product placeholder image or dynamic visual URL" },
+        "sku": { "type": "string", "description": "Unique Stock Keeping Unit code for granular warehouse inventory management" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "brand", "category", "price", "stock", "description", "image"]
+    },
+    "order": {
+      "title": "Order",
+      "description": "Order records with M-Pesa processing state and client invoice indicators",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Firebase Auth UID corresponding to client" },
+        "customerName": { "type": "string", "description": "Buyer's human name" },
+        "customerEmail": { "type": "string", "description": "Buyer's primary contact email" },
+        "customerPhone": { "type": "string", "description": "Contact phone number" },
+        "shippingAddress": { "type": "string", "description": "Delivery address details inside Kenya" },
+        "items": { "type": "array", "description": "List of ordered items with prices and quantities" },
+        "totalAmount": { "type": "number", "description": "Sum total cost of items in KES" },
+        "mpesaPhone": { "type": "string", "description": "M-Pesa payment phone number in format 2547XXXXXXXX or 07XXXXXXXX" },
+        "receiptNo": { "type": "string", "description": "M-Pesa validation reference code (e.g. RGK23910M4)" },
+        "paymentStatus": { "type": "string", "description": "Transaction status: Pending, Paid, Failed" },
+        "shippingStatus": { "type": "string", "description": "Fulfillment status: Processing, Shipped, Delivered" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "customerName", "customerEmail", "shippingAddress", "items", "totalAmount", "mpesaPhone", "paymentStatus", "shippingStatus"]
+    },
+    "user": {
+      "title": "User",
+      "description": "User profile representation containing role privileges",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "description": "Verified user email address" },
+        "name": { "type": "string", "description": "Display name" },
+        "role": { "type": "string", "description": "Privilege level: admin, customer" },
+        "wishlist": { "type": "array", "description": "Array of product ids liked/favorited by client" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["email", "name", "role"]
+    },
+    "transaction_feedback": {
+      "title": "Transaction Feedback",
+      "description": "Post-purchase customer ratings of their checkout, payment, and delivery experience",
+      "type": "object",
+      "properties": {
+        "orderId": { "type": "string", "description": "ID of the associated order" },
+        "userId": { "type": "string", "description": "Auth UID of the buyer" },
+        "userName": { "type": "string", "description": "Buyer's display name" },
+        "rating": { "type": "number", "description": "Rating score out of 5 stars" },
+        "comment": { "type": "string", "description": "Feedback message" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["orderId", "userId", "userName", "rating", "comment", "createdAt"]
+    },
+    "company_profile": {
+      "title": "Company Profile",
+      "description": "Company branding details including name, tax registration number, logo and support contacts",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "The registered company business name" },
+        "logoUrl": { "type": "string", "description": "Official company logo image URL or base64 data" },
+        "taxPin": { "type": "string", "description": "VAT or KRA tax registration PIN" },
+        "address": { "type": "string", "description": "Business physical address and office location" },
+        "email": { "type": "string", "description": "Official admin and billing contact email" },
+        "phone": { "type": "string", "description": "Primary customer service phone number" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "taxPin"]
+    },
+    "newsletter": {
+      "title": "Newsletter",
+      "description": "User subscription newsletter emails",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "description": "Email address of subscriber" },
+        "subscribedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["email", "subscribedAt"]
+    },
+    "price_alert": {
+      "title": "Price Alert",
+      "description": "User subscription alerts for product price drops",
+      "type": "object",
+      "properties": {
+        "productId": { "type": "string", "description": "ID of the target product" },
+        "productName": { "type": "string", "description": "Name of the target product" },
+        "email": { "type": "string", "description": "Email address of subscriber" },
+        "targetPrice": { "type": "number", "description": "Target price in KES to initiate notification" },
+        "currentPrice": { "type": "number", "description": "Price at the time the alert was configured in KES" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["productId", "productName", "email", "targetPrice", "currentPrice", "createdAt"]
+    },
+    "product_restock_request": {
+      "title": "Product Restock Request",
+      "description": "User requests for notification when an out-of-stock product is restocked",
+      "type": "object",
+      "properties": {
+        "productId": { "type": "string", "description": "Target product ID" },
+        "productName": { "type": "string", "description": "Target product name" },
+        "productImage": { "type": "string", "description": "Target product thumbnail image URL" },
+        "email": { "type": "string", "description": "User email address" },
+        "whatsapp": { "type": "string", "description": "User WhatsApp phone number" },
+        "userId": { "type": "string", "description": "Firebase Auth UID if authenticated" },
+        "status": { "type": "string", "description": "Request processing status" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["productId", "productName", "createdAt"]
+    },
+    "trash": {
+      "title": "Trash",
+      "description": "Products deleted by admin and held for 60 days before purge",
+      "type": "object",
+      "properties": {
+        "originalId": { "type": "string", "description": "Original product ID" },
+        "productData": { "type": "object", "description": "The serialized product details" },
+        "deletedAt": { "type": "string", "format": "date-time", "description": "The exact time the product was deleted" }
+      },
+      "required": ["originalId", "productData", "deletedAt"]
+    },
+    "activity_log": {
+      "title": "Activity Log",
+      "description": "Logs of user page views and search terms for store intelligence",
+      "type": "object",
+      "properties": {
+        "type": { "type": "string", "description": "Type of activity: page_view or search" },
+        "target": { "type": "string", "description": "The specific page name or search keyword" },
+        "userId": { "type": "string", "description": "UID of the user if logged in" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["type", "target", "createdAt"]
+    },
+    "review": {
+      "title": "Product Review",
+      "description": "Customer ratings and reviews for individual commodities",
+      "type": "object",
+      "properties": {
+        "productId": { "type": "string", "description": "ID of the target product" },
+        "userId": { "type": "string", "description": "Auth UID of the reviewer" },
+        "userName": { "type": "string", "description": "Display name of reviewer" },
+        "rating": { "type": "number", "description": "Star rating out of 5" },
+        "comment": { "type": "string", "description": "Review comment text" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["productId", "userId", "userName", "rating", "comment", "createdAt"]
+    },
+    "audit_log": {
+      "title": "Audit Log",
+      "description": "Tracks administrative actions like product updates, password changes, and exports for accountability",
+      "type": "object",
+      "properties": {
+        "action": { "type": "string", "description": "The administrative action category (e.g. product_creation, password_change, bulk_export)" },
+        "details": { "type": "string", "description": "Explanatory human-readable details of the action" },
+        "adminEmail": { "type": "string", "description": "Email of the administrative personnel performing the action" },
+        "adminUid": { "type": "string", "description": "User UID of the admin if signed in" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["action", "details", "adminEmail", "createdAt"]
+    },
+    "search_query": {
+      "title": "Search Query",
+      "description": "Log of users' search queries for store intelligence",
+      "type": "object",
+      "properties": {
+        "query": { "type": "string", "description": "The search term entered by the user" },
+        "userId": { "type": "string", "description": "UID of the user if logged in" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["query", "createdAt"]
+    },
+    "whatsapp_click": {
+      "title": "WhatsApp Click Event",
+      "description": "Log of users' clicks on the persistent WhatsApp button for engagement analysis",
+      "type": "object",
+      "properties": {
+        "page": { "type": "string", "description": "The active page/view when clicked" },
+        "referralSource": { "type": "string", "description": "Where the visitor came from or direct URL parameters" },
+        "productName": { "type": "string", "description": "Name of the product if clicked from a details page" },
+        "productId": { "type": "string", "description": "ID of the product if clicked from a details page" },
+        "userId": { "type": "string", "description": "UID of the logged in user if applicable" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["page", "referralSource", "createdAt"]
+    },
+    "saved_item": {
+      "title": "Saved Item",
+      "description": "A favorite product saved by a customer",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "The Firebase Auth UID of the customer" },
+        "productId": { "type": "string", "description": "The unique product ID of the saved hardware" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "productId", "createdAt"]
+    },
+    "flash_offer": {
+      "title": "Flash Offer",
+      "description": "Active promotional campaign schedules for individual products",
+      "type": "object",
+      "properties": {
+        "productId": { "type": "string", "description": "The unique product ID" },
+        "flashPrice": { "type": "number", "description": "The discounted promotion price in KES" },
+        "flashStart": { "type": "string", "description": "Scheduled start date and time (ISO format)" },
+        "flashExpiry": { "type": "string", "description": "Promotion expiration date and time (ISO format)" },
+        "flashBanner": { "type": "string", "description": "Promotional banner badge text" }
+      },
+      "required": ["productId", "flashPrice", "flashExpiry", "flashBanner"]
+    },
+    "order_feedback": {
+      "title": "Order Feedback",
+      "description": "Post-purchase customer ratings of their overall purchase experience",
+      "type": "object",
+      "properties": {
+        "orderId": { "type": "string", "description": "ID of the associated order" },
+        "userId": { "type": "string", "description": "Auth UID of the buyer" },
+        "userName": { "type": "string", "description": "Buyer's display name" },
+        "rating": { "type": "number", "description": "Rating score out of 5 stars" },
+        "comment": { "type": "string", "description": "Feedback comments" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["orderId", "userId", "userName", "rating", "createdAt"]
+    },
+    "whatsapp_notification": {
+      "title": "WhatsApp Notification",
+      "description": "Log of WhatsApp notifications dispatched for new orders and inventory changes",
+      "type": "object",
+      "properties": {
+        "orderId": { "type": "string", "description": "The associated order ID" },
+        "recipient": { "type": "string", "description": "WhatsApp number notified (e.g., 0792620789)" },
+        "message": { "type": "string", "description": "The raw message content sent to WhatsApp" },
+        "status": { "type": "string", "description": "Dispatch status: Sent, Delivered, Failed" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["orderId", "recipient", "message", "status", "createdAt"]
+    },
+    "fcm_token": {
+      "title": "FCM Device Token",
+      "description": "Firebase Cloud Messaging web push registration tokens for push notifications",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "The Firebase Auth UID or guest identifier" },
+        "token": { "type": "string", "description": "FCM registration web push token" },
+        "platform": { "type": "string", "description": "Platform identifier (web)" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "token", "updatedAt"]
+    },
+    "push_notification": {
+      "title": "Push Notification",
+      "description": "Push notification messages for order updates, price drops, and new product arrivals",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "The recipient user ID or 'all' for broadcasts" },
+        "title": { "type": "string", "description": "Push notification title" },
+        "body": { "type": "string", "description": "Push notification body text" },
+        "type": { "type": "string", "description": "Category: order_update, price_drop, product_arrival, general" },
+        "read": { "type": "boolean", "description": "Whether the notification has been read by user" },
+        "link": { "type": "string", "description": "Optional deep link URL or view action" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "title", "body", "type", "createdAt"]
+    },
+    "browsing_history": {
+      "title": "Browsing History",
+      "description": "User product view history for personalized recommendations",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "The Firebase Auth UID or guest user identifier" },
+        "productId": { "type": "string", "description": "The ID of the viewed product" },
+        "productName": { "type": "string", "description": "The name of the viewed product" },
+        "category": { "type": "string", "description": "The product category" },
+        "brand": { "type": "string", "description": "The product brand name" },
+        "viewedAt": { "type": "string", "format": "date-time", "description": "ISO timestamp of product view" }
+      },
+      "required": ["userId", "productId", "viewedAt"]
+    },
+    "spare_parts_request": {
+      "title": "Spare Parts Request",
+      "description": "Customer requests for maintenance and replacement spare parts for previously purchased machinery",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Auth UID of customer" },
+        "userName": { "type": "string", "description": "Customer display name" },
+        "userEmail": { "type": "string", "description": "Customer contact email" },
+        "userPhone": { "type": "string", "description": "Customer phone contact" },
+        "orderId": { "type": "string", "description": "Optional linked purchase order reference" },
+        "productId": { "type": "string", "description": "Target equipment model identifier" },
+        "productName": { "type": "string", "description": "Target equipment name" },
+        "partName": { "type": "string", "description": "Name or title of required spare part" },
+        "partNumber": { "type": "string", "description": "Specific part OEM or component code" },
+        "partDescription": { "type": "string", "description": "Detailed explanation of breakdown or required maintenance components" },
+        "machineSerialNumber": { "type": "string", "description": "Machine serial number or chassis frame code" },
+        "workshopLocation": { "type": "string", "description": "Workshop or site physical address for delivery" },
+        "urgency": { "type": "string", "description": "Urgency level: routine, preventive, urgent, machine_down" },
+        "quantity": { "type": "integer", "description": "Quantity of parts required" },
+        "photoUrl": { "type": "string", "description": "Image URL or photo proof of worn part" },
+        "status": { "type": "string", "description": "Status: submitted, under_review, quoted, dispatched, fulfilled, cancelled" },
+        "quoteAmount": { "type": "number", "description": "Admin quotation price in KES" },
+        "adminNotes": { "type": "string", "description": "Technical notes or estimated lead time from support" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "userName", "userEmail", "productName", "partDescription", "createdAt"]
+    },
+    "bulk_quote": {
+      "title": "Bulk Machinery Quote",
+      "description": "Bulk quote and fleet acquisition requests for heavy machinery",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Auth UID or customer identifier" },
+        "customerName": { "type": "string", "description": "Contact person name" },
+        "companyName": { "type": "string", "description": "Company or enterprise name" },
+        "companyTaxPin": { "type": "string", "description": "Company tax registration PIN" },
+        "customerEmail": { "type": "string", "description": "Contact email" },
+        "customerPhone": { "type": "string", "description": "Contact phone number" },
+        "county": { "type": "string", "description": "Kenya county" },
+        "workshopLocation": { "type": "string", "description": "Delivery/workshop physical site" },
+        "timeline": { "type": "string", "description": "Procurement timeline" },
+        "targetBudget": { "type": "string", "description": "Estimated target budget" },
+        "customRequirements": { "type": "string", "description": "Detailed specifications or customization requests" },
+        "items": { "type": "array", "description": "List of equipment items requested in bulk" },
+        "estimatedTotal": { "type": "number", "description": "Estimated sum total" },
+        "status": { "type": "string", "description": "Quote status: pending, reviewed, quoted, completed, cancelled" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["customerName", "customerEmail", "customerPhone", "workshopLocation", "items", "createdAt"]
+    },
+    "admin_notification": {
+      "title": "Admin Notification",
+      "description": "Real-time notifications for orders and customer inquiries",
+      "type": "object",
+      "properties": {
+        "type": { "type": "string", "description": "Notification category" },
+        "title": { "type": "string", "description": "Notification title" },
+        "message": { "type": "string", "description": "Notification content" },
+        "read": { "type": "boolean", "description": "Read status" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["type", "title", "message"]
+    }
+  },
+  "firestore": {
+    "/bulk_quotes/{quoteId}": {
+      "schema": "bulk_quote",
+      "description": "Bulk quote and fleet machinery acquisition requests"
+    },
+    "/admin_notifications/{notificationId}": {
+      "schema": "admin_notification",
+      "description": "System and admin dashboard real-time notification alerts"
+    },
+    "/spare_parts_requests/{requestId}": {
+      "schema": "spare_parts_request",
+      "description": "Customer spare parts and maintenance breakdown requests"
+    },
+    "/browsing_history/{historyId}": {
+      "schema": "browsing_history",
+      "description": "User browsing and product view records used for personalized recommendations"
+    },
+    "/products/{productId}": {
+      "schema": "product",
+      "description": "The list of premium electronic store items"
+    },
+    "/orders/{orderId}": {
+      "schema": "order",
+      "description": "The customer purchases and M-Pesa tracking records"
+    },
+    "/users/{userId}": {
+      "schema": "user",
+      "description": "The registered store accounts containing metadata and roles"
+    },
+    "/newsletters/{newsletterId}": {
+      "schema": "newsletter",
+      "description": "The registered email subscriptions for newsletters"
+    },
+    "/price_alerts/{alertId}": {
+      "schema": "price_alert",
+      "description": "The user-registered price alerts monitoring automated price drops"
+    },
+    "/trash/{trashId}": {
+      "schema": "trash",
+      "description": "Soft-deleted products stored for a 60-day automatic deletion window"
+    },
+    "/activity_logs/{logId}": {
+      "schema": "activity_log",
+      "description": "Granular activity events tracking pages and search terms"
+    },
+    "/reviews/{reviewId}": {
+      "schema": "review",
+      "description": "Product reviews and ratings submitted by store customers"
+    },
+    "/transaction_feedback/{feedbackId}": {
+      "schema": "transaction_feedback",
+      "description": "Post-purchase customer ratings of their delivery and transaction experience"
+    },
+    "/company_profile/{profileId}": {
+      "schema": "company_profile",
+      "description": "The enterprise operational details, tax codes, and printable logo for custom PDF invoice generations"
+    },
+    "/audit_logs/{logId}": {
+      "schema": "audit_log",
+      "description": "Comprehensive security and operational logs tracking administrative actions"
+    },
+    "/search_queries/{queryId}": {
+      "schema": "search_query",
+      "description": "Logs of user search terms for trend analysis"
+    },
+    "/whatsapp_clicks/{clickId}": {
+      "schema": "whatsapp_click",
+      "description": "Engagement metrics logs for users clicking the WhatsApp support button"
+    },
+    "/saved_items/{savedItemId}": {
+      "schema": "saved_item",
+      "description": "User saved favorite items for persistent wishlist access"
+    },
+    "/flash_offers/{offerId}": {
+      "schema": "flash_offer",
+      "description": "Active promotional campaign schedules for individual products"
+    },
+    "/order_feedback/{feedbackId}": {
+      "schema": "order_feedback",
+      "description": "Post-purchase customer ratings of their overall purchase experience"
+    },
+    "/whatsapp_notifications/{notificationId}": {
+      "schema": "whatsapp_notification",
+      "description": "The dispatched WhatsApp order notification logs"
+    },
+    "/product_restock_requests/{requestId}": {
+      "schema": "product_restock_request",
+      "description": "User requests for notification when an out-of-stock product is restocked"
+    },
+    "/fcm_tokens/{tokenId}": {
+      "schema": "fcm_token",
+      "description": "Registered FCM web push tokens for client devices"
+    },
+    "/notifications/{notificationId}": {
+      "schema": "push_notification",
+      "description": "Push notification history for order updates, price drops, and new product arrivals"
+    }
+  }
+}

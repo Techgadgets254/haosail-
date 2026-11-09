@@ -1,0 +1,464 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+@layer utilities {
+  .animate-fadeIn {
+    animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  .animate-scaleUp {
+    animation: scaleUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  .animate-slideDown {
+    animation: slideDown 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  
+  /* Apple/Linear-grade glassmorphism and subtle surface elevation */
+  .apple-glass {
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+  }
+
+  .apple-glass-dark {
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .apple-card {
+    background: #FFFFFF;
+    border: 1px solid rgba(226, 232, 240, 0.85);
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.02), 0 1px 2px -1px rgba(0, 0, 0, 0.02);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .apple-card:hover {
+    border-color: rgba(0, 85, 184, 0.35);
+    box-shadow: 0 12px 28px -4px rgba(0, 0, 0, 0.06), 0 4px 12px -2px rgba(0, 0, 0, 0.03);
+    transform: translateY(-2px);
+  }
+
+  /* Utility to hide scrollbars on mobile chip rows while retaining smooth touch-swiping */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleUp {
+  from { opacity: 0; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Modern Minimalist Theme Setup & CSS Custom Properties */
+:root {
+  color-scheme: light;
+  --bg-primary: #F8FAFC;
+  --bg-secondary: #F1F5F9;
+  --bg-surface: #FFFFFF;
+  --bg-surface-elevated: #FFFFFF;
+  --bg-card: #FFFFFF;
+  --bg-card-hover: #F8FAFC;
+  --bg-popover: #FFFFFF;
+  --bg-modal: #FFFFFF;
+  --bg-input: #FFFFFF;
+  --bg-input-secondary: #F1F5F9;
+  --bg-header: rgba(255, 255, 255, 0.88);
+  --bg-footer: #00224A;
+  
+  --text-primary: #0F172A;
+  --text-secondary: #334155;
+  --text-muted: #64748B;
+  --text-subtle: #94A3B8;
+  
+  --border-primary: #E2E8F0;
+  --border-secondary: #CBD5E1;
+  --border-subtle: rgba(226, 232, 240, 0.8);
+  --border-card: rgba(226, 232, 240, 0.85);
+  --border-input: #CBD5E1;
+  
+  --brand-primary: #0055B8;
+  --brand-hover: #004494;
+  --brand-surface: rgba(0, 85, 184, 0.08);
+  --brand-border: #BFDBFE;
+  --brand-text: #0055B8;
+  
+  --card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.02), 0 1px 2px -1px rgba(0, 0, 0, 0.02);
+  --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.02), 0 1px 2px -1px rgba(0, 0, 0, 0.02);
+  --shadow-popover: 0 16px 36px rgba(0, 0, 0, 0.08);
+}
+
+html.dark, :root[class~="dark"], [data-theme="dark"] {
+  color-scheme: dark;
+  --bg-primary: #0B0F19;
+  --bg-secondary: #111827;
+  --bg-surface: #131B2E;
+  --bg-surface-elevated: #1A243B;
+  --bg-card: #131B2E;
+  --bg-card-hover: #18233C;
+  --bg-popover: #131B2E;
+  --bg-modal: #131B2E;
+  --bg-input: #0F1626;
+  --bg-input-secondary: #162035;
+  --bg-header: rgba(11, 15, 25, 0.88);
+  --bg-footer: #070D18;
+  
+  --text-primary: #F8FAFC;
+  --text-secondary: #CBD5E1;
+  --text-muted: #94A3B8;
+  --text-subtle: #64748B;
+  
+  --border-primary: #1E293B;
+  --border-secondary: #334155;
+  --border-subtle: rgba(51, 65, 85, 0.65);
+  --border-card: rgba(51, 65, 85, 0.7);
+  --border-input: #334155;
+  
+  --brand-primary: #3B82F6;
+  --brand-hover: #60A5FA;
+  --brand-surface: rgba(59, 130, 246, 0.15);
+  --brand-border: rgba(59, 130, 246, 0.35);
+  --brand-text: #60A5FA;
+  
+  --card-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
+  --shadow-card: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
+  --shadow-popover: 0 16px 36px rgba(0, 0, 0, 0.5);
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.011em;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+/* ============================================================
+   GLOBAL THEME NORMALIZATION RULES
+   Guarantees seamless, zero-inconsistency transitions between Light
+   and Dark modes across all cards, containers, texts, inputs, tables,
+   dropdowns, modals, and borders.
+   ============================================================ */
+
+/* 1. Global Page Background & Text */
+html.dark body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+/* 2. Surfaces & Cards in Dark Mode */
+html.dark .apple-card {
+  background-color: var(--bg-card);
+  border-color: var(--border-card);
+  box-shadow: var(--shadow-card);
+}
+
+html.dark .apple-glass {
+  background: rgba(17, 24, 39, 0.85);
+  border-color: rgba(51, 65, 85, 0.6);
+}
+
+html.dark .bg-white:not([data-theme-preserve]) {
+  background-color: var(--bg-card);
+}
+
+html.dark [class*="bg-white/"]:not([data-theme-preserve]) {
+  background-color: rgba(19, 27, 46, 0.95);
+}
+
+html.dark .bg-slate-50:not([data-theme-preserve]) {
+  background-color: var(--bg-secondary);
+}
+
+html.dark [class*="bg-slate-50/"]:not([data-theme-preserve]) {
+  background-color: rgba(17, 24, 39, 0.85);
+}
+
+html.dark .bg-slate-100:not([data-theme-preserve]),
+html.dark [class*="bg-slate-100/"]:not([data-theme-preserve]) {
+  background-color: var(--bg-surface-elevated);
+}
+
+html.dark .bg-slate-200:not([data-theme-preserve]) {
+  background-color: #243047;
+}
+
+/* 3. Text Adaptations in Dark Mode */
+html.dark .text-slate-900:not([data-theme-preserve]),
+html.dark .text-slate-800:not([data-theme-preserve]) {
+  color: var(--text-primary);
+}
+
+html.dark .text-slate-700:not([data-theme-preserve]),
+html.dark .text-slate-600:not([data-theme-preserve]) {
+  color: var(--text-secondary);
+}
+
+html.dark .text-slate-500:not([data-theme-preserve]) {
+  color: var(--text-muted);
+}
+
+html.dark .text-slate-400:not([data-theme-preserve]) {
+  color: #7888A0;
+}
+
+/* 4. Borders & Dividers in Dark Mode */
+html.dark .border-slate-100:not([data-theme-preserve]),
+html.dark [class*="border-slate-100/"]:not([data-theme-preserve]) {
+  border-color: rgba(30, 41, 59, 0.7);
+}
+
+html.dark .border-slate-200:not([data-theme-preserve]),
+html.dark [class*="border-slate-200/"]:not([data-theme-preserve]) {
+  border-color: rgba(51, 65, 85, 0.65);
+}
+
+html.dark .border-slate-300:not([data-theme-preserve]) {
+  border-color: rgba(71, 85, 105, 0.7);
+}
+
+html.dark .divide-slate-100 > :not([hidden]) ~ :not([hidden]) {
+  border-color: rgba(30, 41, 59, 0.7);
+}
+
+html.dark .divide-slate-200 > :not([hidden]) ~ :not([hidden]) {
+  border-color: rgba(51, 65, 85, 0.65);
+}
+
+/* 5. Brand Pill & Accent Adaptations in Dark Mode */
+html.dark .bg-blue-50:not([data-theme-preserve]),
+html.dark [class*="bg-blue-50/"]:not([data-theme-preserve]) {
+  background-color: rgba(59, 130, 246, 0.15);
+}
+
+html.dark .border-blue-100:not([data-theme-preserve]),
+html.dark .border-blue-200:not([data-theme-preserve]),
+html.dark [class*="border-blue-200/"]:not([data-theme-preserve]) {
+  border-color: rgba(59, 130, 246, 0.35);
+}
+
+html.dark .text-\[\#0055B8\]:not([data-theme-preserve]),
+html.dark .text-\[\#0066CC\]:not([data-theme-preserve]) {
+  color: #60A5FA;
+}
+
+html.dark .hover\:text-\[\#0055B8\]:hover:not([data-theme-preserve]),
+html.dark .hover\:text-\[\#0066CC\]:hover:not([data-theme-preserve]),
+html.dark .group:hover .group-hover\:text-\[\#0055B8\],
+html.dark .group:hover .group-hover\:text-\[\#0066CC\] {
+  color: #93C5FD !important;
+}
+
+/* Status Badges in Dark Mode */
+html.dark .text-emerald-800:not([data-theme-preserve]),
+html.dark .text-emerald-700:not([data-theme-preserve]) {
+  color: #34D399;
+}
+html.dark .bg-emerald-50:not([data-theme-preserve]),
+html.dark [class*="bg-emerald-50/"]:not([data-theme-preserve]) {
+  background-color: rgba(6, 78, 59, 0.3);
+}
+html.dark .border-emerald-200:not([data-theme-preserve]),
+html.dark [class*="border-emerald-200/"]:not([data-theme-preserve]) {
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+html.dark .text-amber-800:not([data-theme-preserve]),
+html.dark .text-amber-700:not([data-theme-preserve]) {
+  color: #FBBF24;
+}
+html.dark .bg-amber-50:not([data-theme-preserve]),
+html.dark [class*="bg-amber-50/"]:not([data-theme-preserve]) {
+  background-color: rgba(120, 53, 15, 0.3);
+}
+html.dark .border-amber-200:not([data-theme-preserve]),
+html.dark [class*="border-amber-200/"]:not([data-theme-preserve]) {
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+html.dark .text-rose-800:not([data-theme-preserve]),
+html.dark .text-rose-700:not([data-theme-preserve]),
+html.dark .text-red-800:not([data-theme-preserve]),
+html.dark .text-red-700:not([data-theme-preserve]) {
+  color: #F87171;
+}
+html.dark .bg-rose-50:not([data-theme-preserve]),
+html.dark [class*="bg-rose-50/"]:not([data-theme-preserve]),
+html.dark .bg-red-50:not([data-theme-preserve]),
+html.dark [class*="bg-red-50/"]:not([data-theme-preserve]) {
+  background-color: rgba(127, 29, 29, 0.25);
+}
+html.dark .border-rose-200:not([data-theme-preserve]),
+html.dark [class*="border-rose-200/"]:not([data-theme-preserve]),
+html.dark .border-red-200:not([data-theme-preserve]),
+html.dark [class*="border-red-200/"]:not([data-theme-preserve]) {
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+/* Admin Dashboard Theme Harmonization */
+html.dark .bg-\[\#F4F5F7\],
+html.dark [class*="bg-\[\#F4F5F7\]"],
+html.dark .bg-\[\#F8FAFC\],
+html.dark [class*="bg-\[\#F8FAFC\]"],
+html.dark .bg-\[\#FAFAFA\],
+html.dark [class*="bg-\[\#FAFAFA\]"] {
+  background-color: var(--bg-primary) !important;
+}
+
+html.dark .bg-\[\#E8F5E9\]:not([data-theme-preserve]) {
+  background-color: rgba(22, 101, 52, 0.28) !important;
+}
+html.dark .text-\[\#166534\]:not([data-theme-preserve]) {
+  color: #4ADE80 !important;
+}
+html.dark .border-\[\#166534\]:not([data-theme-preserve]) {
+  border-color: #4ADE80 !important;
+}
+
+/* Recharts Tooltip Dark Mode */
+html.dark .recharts-default-tooltip {
+  background-color: var(--bg-card) !important;
+  border-color: var(--border-card) !important;
+  color: var(--text-primary) !important;
+}
+html.dark .recharts-tooltip-item {
+  color: var(--text-secondary) !important;
+}
+html.dark .recharts-cartesian-grid line {
+  stroke: rgba(51, 65, 85, 0.4) !important;
+}
+
+/* 6. Form Inputs & Selects in Dark Mode */
+html.dark input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):not([data-theme-preserve]),
+html.dark select:not([data-theme-preserve]),
+html.dark textarea:not([data-theme-preserve]) {
+  background-color: var(--bg-input);
+  color: var(--text-primary);
+  border-color: var(--border-input);
+}
+
+html.dark input::placeholder,
+html.dark textarea::placeholder {
+  color: #64748B;
+}
+
+/* 7. Interactive Hover States in Dark Mode */
+html.dark .hover\:bg-slate-50:hover,
+html.dark .hover\:bg-slate-100:hover,
+html.dark .hover\:bg-white:hover {
+  background-color: var(--bg-surface-elevated) !important;
+}
+
+html.dark .hover\:bg-blue-50:hover {
+  background-color: rgba(59, 130, 246, 0.22) !important;
+}
+
+html.dark .hover\:text-slate-900:hover,
+html.dark .hover\:text-slate-800:hover {
+  color: #FFFFFF !important;
+}
+
+/* 8. Tables in Dark Mode */
+html.dark table {
+  background-color: var(--bg-card);
+  color: var(--text-primary);
+}
+
+html.dark th,
+html.dark thead {
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  border-color: var(--border-primary);
+}
+
+html.dark td {
+  border-color: var(--border-primary);
+  color: var(--text-secondary);
+}
+
+/* 9. Header & Footer in Dark Mode */
+html.dark #storefront-header {
+  background-color: var(--bg-header);
+  border-color: var(--border-primary);
+}
+
+html.dark #storefront-footer {
+  background-color: var(--bg-footer);
+  border-color: rgba(30, 41, 59, 0.6);
+}
+
+/* 10. Modals, Dialogs, Dropdowns & Overlays in Dark Mode */
+html.dark [role="dialog"],
+html.dark [id*="modal"],
+html.dark [id*="dropdown"],
+html.dark #auth-modal-card,
+html.dark #product-details-bottom-sheet {
+  background-color: var(--bg-card);
+  border-color: var(--border-card);
+  color: var(--text-primary);
+}
+
+/* 11. Custom Scrollbars in Dark Mode */
+html.dark ::-webkit-scrollbar-thumb {
+  background: #334155;
+}
+
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+/* Custom crisp scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
+
+/* Selection highlight */
+::selection {
+  background-color: rgba(0, 85, 184, 0.15);
+  color: #0055B8;
+}
+
+/* Universal Button & Link Transitions */
+button, a {
+  transition-property: color, background-color, border-color, transform, box-shadow, opacity;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  transition-duration: 200ms;
+}

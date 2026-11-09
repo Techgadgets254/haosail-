@@ -1,0 +1,386 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // 1. Global Catch-All: Deny by default for unmatched paths
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- Core Primitives and Helpers ---
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isEmailVerified() {
+      return request.auth != null && request.auth.token.email_verified == true;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'info@haosail.ke' ||
+        request.auth.token.email == 'admin@haosail.ke' ||
+        request.auth.token.email == 'sales@haosail.ke' ||
+        request.auth.token.email == 'techgadgetsk@gmail.com' || 
+        request.auth.token.email == 'admin@techgadgetskenya.co.ke' ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) && (
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data['admin-claims'] == true ||
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data['admin-claims'] == 'admin'
+        ))
+      );
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // --- Validation Rules for Entities ---
+
+    function isValidProduct(data) {
+      return (!data.keys().hasAll(['name']) || (data.name is string && data.name.size() > 0 && data.name.size() <= 300))
+        && (!data.keys().hasAll(['brand']) || (data.brand is string && data.brand.size() <= 150))
+        && (!data.keys().hasAll(['category']) || (data.category is string && data.category.size() <= 150))
+        && (!data.keys().hasAll(['price']) || (data.price is number && data.price >= 0))
+        && (!data.keys().hasAll(['stock']) || ((data.stock is int || data.stock is number) && data.stock >= 0))
+        && (!data.keys().hasAll(['description']) || (data.description is string && data.description.size() <= 50000))
+        && (!data.keys().hasAll(['image']) || (data.image is string && data.image.size() <= 15000000))
+        && (!data.keys().hasAll(['sku']) || (data.sku is string && data.sku.size() <= 100))
+        && (!data.keys().hasAll(['deleted']) || data.deleted is bool);
+    }
+
+    function isValidOrder(data) {
+      return (!data.keys().hasAll(['userId']) || (data.userId is string && data.userId.size() <= 128))
+        && (!data.keys().hasAll(['customerName']) || (data.customerName is string && data.customerName.size() <= 200))
+        && (!data.keys().hasAll(['customerEmail']) || (data.customerEmail is string && data.customerEmail.size() <= 300))
+        && (!data.keys().hasAll(['shippingAddress']) || (data.shippingAddress is string && data.shippingAddress.size() <= 3000))
+        && (!data.keys().hasAll(['totalAmount']) || (data.totalAmount is number && data.totalAmount >= 0))
+        && (!data.keys().hasAll(['items']) || (data.items is list && data.items.size() <= 200));
+    }
+
+    function isValidBulkQuote(data) {
+      return (!data.keys().hasAll(['customerName']) || (data.customerName is string && data.customerName.size() <= 200))
+        && (!data.keys().hasAll(['customerEmail']) || (data.customerEmail is string && data.customerEmail.size() <= 300))
+        && (!data.keys().hasAll(['customerPhone']) || (data.customerPhone is string && data.customerPhone.size() <= 100));
+    }
+
+    function isValidAdminNotification(data) {
+      return (!data.keys().hasAll(['type']) || (data.type is string && data.type.size() <= 100))
+        && (!data.keys().hasAll(['title']) || (data.title is string && data.title.size() <= 300))
+        && (!data.keys().hasAll(['message']) || (data.message is string && data.message.size() <= 2000));
+    }
+
+    function isValidUser(data) {
+      return (!data.keys().hasAll(['email']) || (data.email is string && data.email.size() <= 300))
+        && (!data.keys().hasAll(['name']) || (data.name is string && data.name.size() <= 200));
+    }
+
+    function isValidTransactionFeedback(data) {
+      return (!data.keys().hasAll(['orderId']) || (data.orderId is string && data.orderId.size() <= 128))
+        && (!data.keys().hasAll(['rating']) || (data.rating is number && data.rating >= 1 && data.rating <= 5));
+    }
+
+    function isValidOrderFeedback(data) {
+      return (!data.keys().hasAll(['orderId']) || (data.orderId is string && data.orderId.size() <= 128))
+        && (!data.keys().hasAll(['rating']) || (data.rating is number && data.rating >= 1 && data.rating <= 5));
+    }
+
+    function isValidCompanyProfile(data) {
+      return (!data.keys().hasAll(['name']) || (data.name is string && data.name.size() <= 300))
+        && (!data.keys().hasAll(['taxPin']) || (data.taxPin is string && data.taxPin.size() <= 100));
+    }
+
+    function isValidNewsletter(data) {
+      return (!data.keys().hasAll(['email']) || (data.email is string && data.email.size() <= 300));
+    }
+
+    function isValidPriceAlert(data) {
+      return (!data.keys().hasAll(['productId']) || (data.productId is string && data.productId.size() <= 128))
+        && (!data.keys().hasAll(['email']) || (data.email is string && data.email.size() <= 300));
+    }
+
+    function isValidProductRestockRequest(data) {
+      return (!data.keys().hasAll(['productId']) || (data.productId is string && data.productId.size() <= 128));
+    }
+
+    function isValidTrash(data) {
+      return (!data.keys().hasAll(['originalId']) || (data.originalId is string && data.originalId.size() <= 128));
+    }
+
+    function isValidActivityLog(data) {
+      return (!data.keys().hasAll(['type']) || (data.type is string && data.type.size() <= 100));
+    }
+
+    function isValidReview(data) {
+      return (!data.keys().hasAll(['productId']) || (data.productId is string && data.productId.size() <= 128))
+        && (!data.keys().hasAll(['rating']) || (data.rating is number && data.rating >= 1 && data.rating <= 5));
+    }
+
+    function isValidAuditLog(data) {
+      return (!data.keys().hasAll(['action']) || (data.action is string && data.action.size() <= 150));
+    }
+
+    function isValidAuthEvent(data) {
+      return (!data.keys().hasAll(['eventType']) || (data.eventType is string && data.eventType.size() <= 100));
+    }
+
+    function isValidSeoMetadata(data) {
+      return (!data.keys().hasAll(['title']) || (data.title is string && data.title.size() <= 300));
+    }
+
+    function isValidPasswordResetRequest(data) {
+      return (!data.keys().hasAll(['email']) || (data.email is string && data.email.size() <= 300));
+    }
+
+    function isValidSearchQuery(data) {
+      return (!data.keys().hasAll(['query']) || (data.query is string && data.query.size() <= 500));
+    }
+
+    function isValidWhatsAppClick(data) {
+      return (!data.keys().hasAll(['page']) || (data.page is string && data.page.size() <= 200));
+    }
+
+    function isValidSavedItem(data) {
+      return (!data.keys().hasAll(['productId']) || (data.productId is string && data.productId.size() <= 128));
+    }
+
+    function isValidFlashOffer(data) {
+      return (!data.keys().hasAll(['productId']) || (data.productId is string && data.productId.size() <= 128));
+    }
+
+    function isValidWhatsAppNotification(data) {
+      return (!data.keys().hasAll(['recipient']) || (data.recipient is string && data.recipient.size() <= 50));
+    }
+
+    function isValidBrowsingHistory(data) {
+      return (!data.keys().hasAll(['productId']) || (data.productId is string && data.productId.size() <= 128));
+    }
+
+    function isValidFcmToken(data) {
+      return (!data.keys().hasAll(['token']) || (data.token is string && data.token.size() <= 2000));
+    }
+
+    function isValidPushNotification(data) {
+      return (!data.keys().hasAll(['title']) || (data.title is string && data.title.size() <= 300));
+    }
+
+    function isValidSparePartsRequest(data) {
+      return (!data.keys().hasAll(['productName']) || (data.productName is string && data.productName.size() <= 300));
+    }
+
+    // --- Collection Routes ---
+
+    // Products: Full access for browsing, creation and updates with validation
+    match /products/{productId} {
+      allow read, list: if true;
+      allow create: if isValidProduct(incoming());
+      allow update: if isValidProduct(incoming());
+      allow delete: if true;
+    }
+
+    // Orders: Full order management and client placement
+    match /orders/{orderId} {
+      allow read, list, get: if true;
+      allow create: if isValidOrder(incoming());
+      allow update: if true;
+      allow delete: if true;
+    }
+
+    // Bulk / Fleet machinery custom quotes:
+    match /bulk_quotes/{quoteId} {
+      allow read, get, list: if true;
+      allow create: if isValidBulkQuote(incoming());
+      allow update, delete: if true;
+    }
+
+    // Admin Real-time Notifications:
+    match /admin_notifications/{notificationId} {
+      allow read, get, list: if true;
+      allow create: if isValidAdminNotification(incoming());
+      allow update, delete: if true;
+    }
+
+    // Social Posts:
+    match /social_posts/{postId} {
+      allow read, get, list: if true;
+      allow create, update, delete: if true;
+    }
+
+    match /transactions/{transactionId} {
+      allow read, list, get, create, update, delete: if true;
+    }
+
+    match /payments/{paymentId} {
+      allow read, get, list, create, update, delete: if true;
+    }
+
+    // Users collection:
+    match /users/{userId} {
+      allow read, get, list: if true;
+      allow create, update: if isValidUser(incoming());
+      allow delete: if true;
+    }
+
+    // Newsletters collection:
+    match /newsletters/{newsletterId} {
+      allow read, list, get, create, update, delete: if true;
+    }
+
+    // Price Alerts collection:
+    match /price_alerts/{alertId} {
+      allow read, list, get, create, update, delete: if true;
+    }
+
+    // Trash collection:
+    match /trash/{trashId} {
+      allow read, list, get, create, update, delete: if true;
+    }
+
+    // Affiliates collection:
+    match /affiliates/{affiliateId} {
+      allow read, list, get, create, update, delete: if true;
+    }
+
+    // Activity Logs:
+    match /activity_logs/{logId} {
+      allow read, list, get, create, update, delete: if true;
+    }
+
+    // Reviews collection:
+    match /reviews/{reviewId} {
+      allow read, get, list, create, update, delete: if true;
+    }
+
+    // Transaction Feedback collection:
+    match /transaction_feedback/{feedbackId} {
+      allow read, list, get, create, update, delete: if true;
+    }
+
+    // Order Feedback collection:
+    match /order_feedback/{feedbackId} {
+      allow read, list, get, create, update, delete: if true;
+    }
+
+    // Company Profile settings collection:
+    match /company_profile/{profileId} {
+      allow read, list, get, create, update, delete: if true;
+    }
+
+    // Audit logs:
+    match /audit_logs/{logId} {
+      allow read, get, list: if true;
+      allow create: if isValidAuditLog(incoming());
+      allow update, delete: if false;
+    }
+
+    // User Authentication Events Logs collection:
+    match /auth_events/{eventId} {
+      allow read, get, list: if true;
+      allow create: if isValidAuthEvent(incoming());
+      allow update: if false;
+      allow delete: if true;
+    }
+
+    // SEO Site-wide Metadata settings:
+    match /seo_metadata/{docId} {
+      allow read, get, list, create, update, delete: if true;
+    }
+
+    match /merchant_sync_logs/{logId} {
+      allow read, write, get, list: if true;
+    }
+
+    // Search Queries logs:
+    match /search_queries/{queryId} {
+      allow read, list, get, create, update, delete: if true;
+    }
+
+    // WhatsApp Clicks logs:
+    match /whatsapp_clicks/{clickId} {
+      allow read, list, get, create, update, delete: if true;
+    }
+
+    // Admin Accounts collection:
+    match /admin_accounts/{adminId} {
+      allow read, write, get, list: if true;
+    }
+
+    // Backups collection:
+    match /backups/{backupId} {
+      allow read, write, get, list: if true;
+    }
+
+    // Error Log collection:
+    match /error-log/{logId} {
+      allow read, write, get, list: if true;
+    }
+
+    // Saved Items collection:
+    match /saved_items/{savedItemId} {
+      allow read, get, list, create, update, delete: if true;
+    }
+
+    // Flash Offers collection:
+    match /flash_offers/{offerId} {
+      allow read, list, get, create, update, delete: if true;
+    }
+
+    // WhatsApp Notifications collection:
+    match /whatsapp_notifications/{notificationId} {
+      allow read, list, get, create, update, delete: if true;
+    }
+
+    match /password_reset_requests/{requestId} {
+      allow read, get, list, create, update, delete: if true;
+    }
+
+    match /reset_requests/{requestId} {
+      allow read, get, list, create, update, delete: if true;
+    }
+
+    match /password_reset_otps/{otpId} {
+      allow read, get, list, create, update, delete: if true;
+    }
+
+    match /user_activity/{activityId} {
+      allow read, get, list, create, update, delete: if true;
+    }
+
+    // Product Restock Requests:
+    match /product_restock_requests/{requestId} {
+      allow read, get, list, create, update, delete: if true;
+    }
+
+    // Browsing History:
+    match /browsing_history/{historyId} {
+      allow read, get, list, create, update, delete: if true;
+    }
+
+    // FCM tokens:
+    match /fcm_tokens/{tokenId} {
+      allow read, get, list, create, update, delete: if true;
+    }
+
+    // Push Notifications:
+    match /notifications/{notificationId} {
+      allow read, get, list, create, update, delete: if true;
+    }
+
+    // Spare Parts Requests:
+    match /spare_parts_requests/{requestId} {
+      allow read, get, list, create, update, delete: if true;
+    }
+  }
+}

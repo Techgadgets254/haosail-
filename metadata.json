@@ -1,0 +1,11 @@
+{
+  "name": "Haosail Machinery Kenya",
+  "description": "Official online portal for Haosail Machinery Co., Ltd in Nairobi, Kenya (haosail.ke) – Construction machinery, auto-maintenance equipment, woodworking machinery, compressors, pumps, and generators with M-Pesa checkout.",
+  "requestFramePermissions": [
+    "camera",
+    "geolocation"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

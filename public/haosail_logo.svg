@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 130" width="100%" height="100%">
+  <!-- HaoSaiL Official Brand Logo -->
+  <g fill="#111111">
+    <!-- H -->
+    <path d="M 20 22 L 44 22 L 44 60 L 80 60 L 80 22 L 104 22 L 104 108 L 80 108 L 80 79 L 44 79 L 44 108 L 20 108 Z" />
+    <!-- a -->
+    <path d="M 152 46 L 152 108 L 132 108 L 132 97 C 127 105 117 110 105 110 C 86 110 74 97 74 78 C 74 58 88 47 113 47 C 122 47 128 48 132 50 L 132 48 C 132 37 124 31 110 31 C 98 31 88 35 80 39 L 73 23 C 85 17 99 13 113 13 C 138 13 152 25 152 46 Z M 132 67 C 128 65 123 64 117 64 C 103 64 94 70 94 80 C 94 89 101 94 110 94 C 122 94 132 85 132 73 Z" transform="translate(45, 0)" />
+    <!-- o -->
+    <path d="M 185 78 C 185 57 200 46 219 46 C 238 46 253 57 253 78 C 253 99 238 110 219 110 C 200 110 185 99 185 78 Z M 232 78 C 232 66 226 59 219 59 C 212 59 206 66 206 78 C 206 90 212 97 219 97 C 226 97 232 90 232 78 Z" transform="translate(18, 0)" />
+  </g>
+
+  <!-- Blue Hexagon S Icon (Official Haosail Hexagon S) -->
+  <g transform="translate(218, 14)" fill="#004C99">
+    <!-- Outer Hexagon / Geometric S Structure -->
+    <path d="M 38 0 L 76 22 L 76 66 L 38 88 L 0 66 L 0 22 Z" fill="#004B98" />
+    <!-- Inner White Geometry creating the interlocking S -->
+    <path d="M 38 10 L 66 26 L 66 38 L 48 28 L 18 45 L 60 45 L 60 78 L 38 90 L 10 74 L 10 62 L 28 72 L 58 55 L 16 55 L 16 22 Z" fill="#FFFFFF" />
+    <path d="M 38 18 L 56 29 L 26 46 L 18 42 Z" fill="#004B98" />
+    <path d="M 38 82 L 20 71 L 50 54 L 58 58 Z" fill="#004B98" />
+  </g>
+
+  <!-- aiL -->
+  <g fill="#111111" transform="translate(288, 0)">
+    <!-- a -->
+    <path d="M 64 46 L 64 108 L 44 108 L 44 97 C 39 105 29 110 17 110 C -2 110 -14 97 -14 78 C -14 58 0 47 25 47 C 34 47 40 48 44 50 L 44 48 C 44 37 36 31 22 31 C 10 31 0 35 -8 39 L -15 23 C -3 17 11 13 25 13 C 50 13 64 25 64 46 Z M 44 67 C 40 65 35 64 29 64 C 15 64 6 70 6 80 C 6 89 13 94 22 94 C 34 94 44 85 44 73 Z" transform="translate(24, 0)" />
+    <!-- i -->
+    <rect x="96" y="18" width="18" height="18" rx="2" />
+    <rect x="96" y="47" width="18" height="61" rx="2" />
+    <!-- L -->
+    <path d="M 124 22 L 144 22 L 144 90 L 172 90 L 172 108 L 124 108 Z" />
+  </g>
+</svg>
