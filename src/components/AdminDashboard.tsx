@@ -44,6 +44,7 @@ import AdminDiagnostics from "./admin/AdminDiagnostics";
 import AdminCredentialManager from "./AdminCredentialManager";
 import AuditLogTable from "./AuditLogTable";
 import MetadataEditor from "./MetadataEditor";
+import BulkProductImport from "./admin/BulkProductImport";
 
 export default function AdminDashboard() {
   const store = useStore();
@@ -825,6 +826,7 @@ export default function AdminDashboard() {
   const SIDEBAR_ITEMS = [
     { id: "dashboard", label: "Dashboard", icon: LayoutGrid },
     { id: "product", label: "Inventory", icon: Package, badge: products.length },
+    { id: "bulk_import", label: "Bulk Product Import", icon: Upload },
     { id: "orders", label: "Orders", icon: Box, badge: orders.length },
     { id: "inbox", label: "Inbox", icon: MessageSquare, badge: pendingPartsCount > 0 ? pendingPartsCount : undefined },
     { id: "analytics", label: "Analytics", icon: BarChart3 },
@@ -835,6 +837,7 @@ export default function AdminDashboard() {
     switch (activeTab) {
       case "dashboard": return "Operations Overview";
       case "product": return "Machinery Inventory";
+      case "bulk_import": return "Bulk Product Import";
       case "orders": return "Orders & Fulfillment";
       case "inbox": return "Customer Inbox & Spare Parts";
       case "analytics": return "Analytics & Diagnostics";
@@ -1174,7 +1177,15 @@ export default function AdminDashboard() {
               onExportCSV={handleExportProductsCSV}
               onImportCSV={handleImportProductsCSV}
               onDownloadTemplate={handleDownloadCSVTemplate}
+              onNavigateToBulkImport={() => setActiveTab("bulk_import")}
               lowStockThreshold={lowStockThreshold}
+            />
+          )}
+
+          {activeTab === "bulk_import" && (
+            <BulkProductImport
+              existingProducts={products}
+              onNavigateToInventory={() => setActiveTab("product")}
             />
           )}
 

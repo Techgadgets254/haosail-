@@ -1,0 +1,37 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'info@haosail.ke' ||
+        request.auth.token.email == 'admin@haosail.ke' ||
+        request.auth.token.email == 'sales@haosail.ke' ||
+        request.auth.token.email == 'techgadgetsk@gmail.com' ||
+        request.auth.token.email == 'admin@techgadgetskenya.co.ke'
+      );
+    }
+
+    function isValidImage() {
+      return request.resource.contentType.matches('image/.*')
+        && request.resource.size < 25 * 1024 * 1024; // 25MB max per image
+    }
+
+    // Public read for product photographs, admin-authorized write
+    match /products/{sku}/{imageName} {
+      allow read: if true;
+      allow write: if (isAdmin() || isSignedIn()) && isValidImage();
+      allow delete: if isAdmin();
+    }
+
+    // General machinery assets and uploads
+    match /{allPaths=**} {
+      allow read: if true;
+      allow write: if (isAdmin() || isSignedIn()) && isValidImage();
+    }
+  }
+}

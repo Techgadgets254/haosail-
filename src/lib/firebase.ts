@@ -75,8 +75,11 @@ try {
   dbInstance = customDbId ? getFirestore(app, customDbId) : getFirestore(app);
 }
 
+import { getStorage } from "firebase/storage";
+
 export const db = dbInstance;
 export const auth = getAuth(app);
+export const storage = getStorage(app);
 
 // Explicitly set browser local persistence for resilient user authentication sessions
 setPersistence(auth, browserLocalPersistence).catch((err) => {

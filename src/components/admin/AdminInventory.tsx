@@ -43,6 +43,7 @@ interface AdminInventoryProps {
   onExportCSV: () => void;
   onImportCSV: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onDownloadTemplate?: () => void;
+  onNavigateToBulkImport?: () => void;
   lowStockThreshold: number;
 }
 
@@ -55,6 +56,7 @@ export default function AdminInventory({
   onExportCSV,
   onImportCSV,
   onDownloadTemplate,
+  onNavigateToBulkImport,
   lowStockThreshold,
 }: AdminInventoryProps) {
   // Filter & Search states
@@ -390,6 +392,17 @@ export default function AdminInventory({
             className="hidden"
           />
 
+          {onNavigateToBulkImport && (
+            <button
+              onClick={onNavigateToBulkImport}
+              className="bg-[#0066CC] hover:bg-[#0052A3] text-white font-bold px-3.5 sm:px-4 py-2.5 rounded-xl text-xs flex items-center gap-1.5 transition-all cursor-pointer min-h-[44px] shadow-sm"
+              title="Open full CSV & ZIP Photo Bulk Importer"
+            >
+              <Upload className="w-3.5 h-3.5 text-white" />
+              <span>Bulk CSV & ZIP Importer</span>
+            </button>
+          )}
+
           {onDownloadTemplate && (
             <button
               onClick={onDownloadTemplate}
@@ -403,11 +416,11 @@ export default function AdminInventory({
 
           <button
             onClick={() => csvInputRef.current?.click()}
-            className="bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-800 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 text-emerald-800 dark:text-emerald-300 font-bold px-3.5 sm:px-4 py-2.5 rounded-xl text-xs flex items-center gap-1.5 transition-all cursor-pointer min-h-[44px]"
+            className="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold px-3.5 sm:px-4 py-2.5 rounded-xl text-xs flex items-center gap-1.5 transition-all cursor-pointer min-h-[44px]"
             title="Upload CSV to add new or update existing products in bulk"
           >
-            <Upload className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-            <span>Bulk Upload CSV</span>
+            <Upload className="w-3.5 h-3.5 text-slate-600 dark:text-slate-400" />
+            <span>Quick CSV Upload</span>
           </button>
           
           <button
@@ -421,9 +434,9 @@ export default function AdminInventory({
 
           <button
             onClick={handleOpenAddModal}
-            className="bg-[#0066CC] hover:bg-[#0052A3] text-white font-bold px-4 sm:px-5 py-2.5 rounded-xl text-xs flex items-center gap-2 transition-all shadow-sm cursor-pointer min-h-[44px]"
+            className="bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 font-bold px-4 sm:px-5 py-2.5 rounded-xl text-xs flex items-center gap-2 transition-all shadow-sm cursor-pointer min-h-[44px]"
           >
-            <Plus className="w-4 h-4 text-white" />
+            <Plus className="w-4 h-4" />
             <span>Add Machinery</span>
           </button>
         </div>
@@ -445,15 +458,27 @@ export default function AdminInventory({
           </div>
         </div>
 
-        {onDownloadTemplate && (
-          <button
-            onClick={onDownloadTemplate}
-            className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 border border-blue-200 dark:border-blue-800 hover:bg-blue-50 text-[#0066CC] dark:text-blue-300 font-bold text-xs shrink-0 cursor-pointer shadow-2xs self-start md:self-auto"
-          >
-            <Download className="w-3.5 h-3.5" />
-            <span>Download Template (.csv)</span>
-          </button>
-        )}
+        <div className="flex flex-wrap items-center gap-2 shrink-0">
+          {onNavigateToBulkImport && (
+            <button
+              onClick={onNavigateToBulkImport}
+              className="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#0066CC] hover:bg-[#0052A3] text-white font-bold text-xs shrink-0 cursor-pointer shadow-2xs"
+            >
+              <Upload className="w-3.5 h-3.5" />
+              <span>Launch CSV & ZIP Importer</span>
+            </button>
+          )}
+
+          {onDownloadTemplate && (
+            <button
+              onClick={onDownloadTemplate}
+              className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 border border-blue-200 dark:border-blue-800 hover:bg-blue-50 text-[#0066CC] dark:text-blue-300 font-bold text-xs shrink-0 cursor-pointer shadow-2xs"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>Download Template (.csv)</span>
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Filter & Search Bar */}
