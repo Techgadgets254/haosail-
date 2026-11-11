@@ -852,7 +852,7 @@ export default function AdminDashboard() {
       <div className="min-h-[75vh] flex items-center justify-center p-4">
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 sm:p-10 max-w-md w-full shadow-xl space-y-6 text-center text-slate-900 dark:text-white">
           <div className="flex items-center justify-center">
-            <HaosailLogo className="h-9" variant="dark" />
+            <HaosailLogo className="h-9" />
           </div>
 
           <div>
@@ -921,7 +921,7 @@ export default function AdminDashboard() {
         <div>
           {/* Top Logo & Brand */}
           <div className="flex items-center justify-between pb-6 border-b border-slate-100 dark:border-slate-800 mb-6">
-            <HaosailLogo className="h-8" variant="dark" />
+            <HaosailLogo className="h-8" />
 
             <button
               onClick={() => setMobileNavOpen(false)}
